@@ -11,14 +11,14 @@
   /* ===== Base ===== */
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; font-family: 'proxima-nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--cool-gray-11); background: var(--bg-subtle); }
-  a { color: var(--cerulean); }
+  a { color: var(--accent); }
   button { font-family: inherit; }
-  /* V7 — unified checkbox: appearance:none + cerulean fill + guaranteed
+  /* Unified checkbox: appearance:none + accent fill + guaranteed
      white SVG check. Locked to a true 16×16 square via aspect-ratio + min/max
      width + flex shorthand so flex parents can't stretch the box. padding:0
      defeats any inherited input padding from form-row styles. Radios keep
      accent-color since native rendering is consistent. */
-  input[type="radio"] { accent-color: var(--cerulean); }
+  input[type="radio"] { accent-color: var(--accent); }
   input[type="checkbox"] {
     appearance: none; -webkit-appearance: none;
     width: 16px; height: 16px;
@@ -35,14 +35,14 @@
   }
   input[type="checkbox"]:hover { border-color: var(--cool-gray-7); }
   input[type="checkbox"]:checked {
-    background-color: var(--cerulean);
-    border-color: var(--cerulean);
+    background-color: var(--accent);
+    border-color: var(--accent);
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
     background-size: 12px 12px;
     background-position: center;
     background-repeat: no-repeat;
   }
-  input[type="checkbox"]:focus-visible { outline: 2px solid var(--cerulean); outline-offset: 1px; }
+  input[type="checkbox"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
   /* ===== Layout ===== */
   .sg { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
@@ -52,7 +52,7 @@
   .sg-nav a { display: block; padding: 7px 8px; color: rgba(255,255,255,0.82); font-size: 13px; text-decoration: none; border-radius: 6px; }
   .sg-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
   .sg-nav a.brand { font-size: 15px; font-weight: 700; padding: 0; margin-bottom: 16px; color: #fff; display: inline-flex; align-items: center; gap: 8px; }
-  .sg-nav a.brand svg { width: 18px; height: 18px; color: var(--gold-tips); flex-shrink: 0; }
+  .sg-nav a.brand svg { width: 18px; height: 18px; color: var(--gold); flex-shrink: 0; }
 
   .sg-main { padding: 48px 56px 96px; max-width: 1080px; }
   .sg-h1 { font-size: 32px; font-weight: 700; color: var(--cool-gray-11); margin: 0 0 8px; }
@@ -90,18 +90,18 @@
   /* Buttons */
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 34px; padding: 0 16px; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--cool-gray-2); background: #fff; color: var(--cool-gray-10); transition: background 0.12s, border-color 0.12s; }
   .btn:hover { background: var(--hover); }
-  .btn-primary { background: var(--cerulean); border-color: var(--cerulean); color: #fff; }
-  .btn-primary:hover { background: var(--cerulean-hover); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); }
   /* Outlined danger — matches the prototype's .btn-danger (white bg, red text, tint on hover) */
-  .btn-danger { background: #fff; border-color: color-mix(in srgb, var(--pantone-7417) 40%, #fff); color: var(--pantone-7417); }
-  .btn-danger:hover { background: color-mix(in srgb, var(--pantone-7417) 8%, #fff); }
+  .btn-danger { background: #fff; border-color: color-mix(in srgb, var(--status-blocked) 40%, #fff); color: var(--status-blocked); }
+  .btn-danger:hover { background: color-mix(in srgb, var(--status-blocked) 8%, #fff); }
 
   /* Record collapse-all toggle + per-step files link */
   .stack-toggle { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 0; padding: 4px 8px; border-radius: var(--radius-sm); font: inherit; font-size: 12px; font-weight: 600; color: var(--cool-gray-9); cursor: pointer; }
   .stack-toggle:hover { background: var(--hover); color: var(--cool-gray-11); }
   .stack-toggle svg { width: 12px; height: 12px; }
-  .step-files-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; background: transparent; border: 0; border-radius: var(--radius-sm); font: inherit; font-size: 13px; font-weight: 600; color: var(--cerulean); cursor: pointer; }
-  .step-files-link:hover { background: color-mix(in srgb, var(--cerulean) 8%, #fff); }
+  .step-files-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; background: transparent; border: 0; border-radius: var(--radius-sm); font: inherit; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; }
+  .step-files-link:hover { background: color-mix(in srgb, var(--accent) 8%, #fff); }
   .step-files-link svg { width: 13px; height: 13px; }
   .step-files-link .sfl-count { color: var(--cool-gray-9); font-weight: 500; }
   .btn.is-active { background: var(--cool-gray-1); border-color: var(--cool-gray-3); color: var(--cool-gray-11); }
@@ -118,9 +118,9 @@
   .icon-btn svg { width: 18px; height: 18px; }
 
   /* Status pills */
-  .status-pill { display: inline-flex; align-items: center; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1; color: #fff; background: var(--status-color, #1f6fd0); }
+  .status-pill { display: inline-flex; align-items: center; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1; color: #fff; background: var(--status-color, #0891b2); }
   .status-pill.sm { font-size: 11px; padding: 3px 9px; }
-  .status-pill.is-in-process { --status-color: #1f6fd0; }
+  .status-pill.is-in-process { --status-color: #0891b2; }
   .status-pill.is-review     { --status-color: #5e548e; }
   .status-pill.is-complete   { --status-color: #1f8a4d; }  /* unified green (matches --notify-green) */
   .status-pill.is-rework     { --status-color: #e88924; }
@@ -143,7 +143,7 @@
      aren't inflated by the 9px/12px input padding. */
   .form-row > label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-7); }
   .form-row input:not([type="checkbox"]):not([type="radio"]), .form-row select, .form-row textarea { width: 100%; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 9px 12px; font: inherit; font-size: 14px; color: var(--text); background: #fff; }
-  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--cerulean); }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--accent); }
   .form-row textarea { min-height: 80px; resize: vertical; }
   .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--cool-gray-11); cursor: pointer; padding: 4px 0; }
   .radio-group { display: flex; gap: 16px; }
@@ -152,27 +152,27 @@
   .switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
   .switch .track { position: absolute; inset: 0; border-radius: 999px; background: var(--cool-gray-3); }
   .switch .track::before { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform 0.15s; box-shadow: 0 1px 2px rgba(52,55,65,0.3); }
-  .switch input:checked + .track { background: var(--cerulean); }
+  .switch input:checked + .track { background: var(--accent); }
   .switch input:checked + .track::before { transform: translateX(12px); }
 
   /* Dropzone */
   .dropzone { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 28px; border: 1.5px dashed var(--cool-gray-3); border-radius: var(--radius-md); background: var(--bg-subtle); color: var(--cool-gray-9); cursor: pointer; max-width: 400px; }
-  .dropzone:hover { border-color: var(--cerulean); background: color-mix(in srgb, var(--cerulean) 5%, #fff); }
+  .dropzone:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, #fff); }
   .dropzone svg { width: 30px; height: 30px; color: var(--cool-gray-7); }
   .dz-title { font-size: 13px; color: var(--cool-gray-11); font-weight: 600; }
   .dz-sub { font-size: 12px; color: var(--cool-gray-9); }
-  .dz-browse { color: var(--cerulean); font-weight: 600; }
+  .dz-browse { color: var(--accent); font-weight: 600; }
   .dz-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-9); font-weight: 600; margin-bottom: 6px; }
   .dz-label em { font-style: normal; font-weight: 400; color: var(--cool-gray-7); }
 
   /* Case card */
   .case-card { display: block; background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 15px 17px; text-decoration: none; color: inherit; max-width: 280px; }
-  .case-card:hover { border-color: var(--cerulean); box-shadow: 0 4px 12px rgba(52,55,65,0.08); transform: translateY(-1px); }
+  .case-card:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(52,55,65,0.08); transform: translateY(-1px); }
   .case-card-id { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 600; color: var(--cool-gray-11); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--hairline); }
   .case-card-id b { font-weight: 600; margin-right: 4px; color: var(--cool-gray-9); }
   .case-card-field { font-size: 12px; color: var(--cool-gray-10); line-height: 1.55; }
   .case-card-field b { font-weight: 600; color: var(--cool-gray-11); margin-right: 4px; }
-  .case-card-dev-icon { width: 13px; height: 13px; color: var(--gold-tips); margin-left: 5px; vertical-align: -2px; }
+  .case-card-dev-icon { width: 13px; height: 13px; color: var(--gold); margin-left: 5px; vertical-align: -2px; }
 
   /* Lane (mini) */
   .sg-lane { width: 280px; background: var(--bg-subtle); border: 1px solid var(--hairline); border-radius: var(--radius-md); padding: 14px 12px; display: flex; flex-direction: column; gap: 14px; }
@@ -231,7 +231,7 @@
   .tl-step:not(.is-done) .tl-node svg { display: none; }
   .tl-step.is-done .tl-node { background: var(--cool-gray-7); border-color: var(--cool-gray-7); }
   .tl-step.is-upcoming .tl-node { border-color: var(--cool-gray-2); }
-  .tl-step.is-current .tl-node { background: var(--cerulean); border-color: var(--cerulean); box-shadow: 0 0 0 4px color-mix(in srgb, var(--cerulean) 16%, #fff); }
+  .tl-step.is-current .tl-node { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, #fff); }
   .tl-label { margin-top: 9px; font-size: 13px; line-height: 1.25; text-align: center; color: var(--cool-gray-9); max-width: 110px; }
   .tl-step.is-upcoming .tl-label { color: var(--cool-gray-7); }
   .tl-step.is-current .tl-label { color: var(--cool-gray-11); font-weight: 700; }
@@ -249,7 +249,7 @@
   .marker { position: absolute; left: 24px; top: 28px; transform: translate(-50%, -50%); width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 2px solid var(--cool-gray-3); display: flex; align-items: center; justify-content: center; color: #fff; z-index: 1; }
   .marker svg { width: 12px; height: 12px; }
   .state-row.is-completed .marker { background: var(--cool-gray-7); border-color: var(--cool-gray-7); }
-  .state-row.is-active .marker { background: var(--cerulean); border-color: var(--cerulean); box-shadow: 0 0 0 4px color-mix(in srgb, var(--cerulean) 16%, #fff); }
+  .state-row.is-active .marker { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, #fff); }
   .state-row.is-upcoming .marker { border-color: var(--cool-gray-2); }
   .state-row:not(.is-completed) .marker svg { display: none; }
   .state-main { padding: 16px 18px 16px 2px; border-bottom: 1px solid var(--hairline); }
@@ -291,7 +291,7 @@
   /* Pp-step card */
   .pp-step { border: 1px solid var(--hairline); border-radius: var(--radius-md); background: #fff; max-width: 540px; }
   .pp-step-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--bg-subtle); border: 0; width: 100%; cursor: pointer; }
-  .pp-num { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--cerulean); color: #fff; font-size: 12px; font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pp-num { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .pp-title { font-size: 14px; font-weight: 700; color: var(--cool-gray-11); flex: 1; text-align: left; }
   .pp-chev { width: 16px; height: 16px; color: var(--cool-gray-7); }
 
@@ -320,8 +320,8 @@
   .ir-readonly { font-size: 13px; color: var(--cool-gray-11); padding: 8px 0; font-variant-numeric: tabular-nums; }
   .radio-row-group { display: flex; gap: 14px; padding: 6px 0; }
   .radio-row { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--cool-gray-11); cursor: pointer; }
-  .radio-row input { accent-color: var(--cerulean); }
-  .req-mark { color: var(--pantone-7417); margin-left: 2px; }
+  .radio-row input { accent-color: var(--accent); }
+  .req-mark { color: var(--status-blocked); margin-left: 2px; }
   .ir-note { font-size: 12px; color: var(--cool-gray-9); align-self: end; padding: 8px 0; }
   .ir-note em { font-style: italic; }
 
@@ -333,8 +333,8 @@
   .ss-field .ss-k { color: var(--cool-gray-9); }
   .ss-field .ss-v { color: var(--cool-gray-11); font-weight: 500; }
   /* Inline file link inside ss-field rows */
-  .ss-file-link { color: var(--cerulean); text-decoration: none; border-bottom: 1px dotted color-mix(in srgb, var(--cerulean) 40%, #fff); cursor: pointer; }
-  .ss-file-link:hover { color: var(--cerulean-hover); border-bottom-color: var(--cerulean); }
+  .ss-file-link { color: var(--accent); text-decoration: none; border-bottom: 1px dotted color-mix(in srgb, var(--accent) 40%, #fff); cursor: pointer; }
+  .ss-file-link:hover { color: var(--accent-hover); border-bottom-color: var(--accent); }
 
   /* Surgeon Approval — V6 Phase 28 */
   .sa-row { display: flex; gap: 10px; }
@@ -349,7 +349,7 @@
   .surgeon-reject-panel { max-width: 540px; }
 
   /* Files-folder flash highlight */
-  .ff-flash-demo { border: 1px solid var(--hairline); padding: 12px; border-radius: var(--radius-md); max-width: 540px; transition: background 0.4s; background: color-mix(in srgb, var(--cerulean) 10%, #fff); color: var(--cool-gray-11); font-size: 13px; }
+  .ff-flash-demo { border: 1px solid var(--hairline); padding: 12px; border-radius: var(--radius-md); max-width: 540px; transition: background 0.4s; background: color-mix(in srgb, var(--accent) 10%, #fff); color: var(--cool-gray-11); font-size: 13px; }
 
   /* Hospital hover tooltip */
   .hospital-wrap { position: relative; display: inline-block; }
@@ -376,7 +376,7 @@
   .lane-sort-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 10px; background: transparent; border: 0; border-radius: var(--radius-sm); font: inherit; font-size: 13px; color: var(--cool-gray-10); cursor: pointer; text-align: left; }
   .lane-sort-item:hover { background: var(--hover); color: var(--cool-gray-11); }
   .lane-sort-item.is-active { background: var(--cool-gray-1); color: var(--cool-gray-11); font-weight: 600; }
-  .lane-sort-item-check { width: 14px; height: 14px; color: var(--cerulean); opacity: 0; flex-shrink: 0; }
+  .lane-sort-item-check { width: 14px; height: 14px; color: var(--accent); opacity: 0; flex-shrink: 0; }
   .lane-sort-item.is-active .lane-sort-item-check { opacity: 1; }
   .lane-sort-item.is-empty { color: var(--cool-gray-7); }
   .lane-sort-item-count { margin-left: auto; padding: 1px 7px; background: var(--cool-gray-1); color: var(--cool-gray-9); font-size: 11px; font-weight: 600; border-radius: 999px; font-variant-numeric: tabular-nums; }
@@ -398,7 +398,7 @@
   .cases-list-section .cl-rows { background: #fff; border-top: 1px solid var(--hairline); border-bottom-left-radius: calc(var(--radius-md) - 1px); border-bottom-right-radius: calc(var(--radius-md) - 1px); }
   .cl-row { display: grid; grid-template-columns: 130px 110px 130px 1fr 120px 36px; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--hairline); text-decoration: none; color: inherit; }
   .cl-row:last-child { border-bottom: 0; }
-  .cl-row:hover { background: color-mix(in srgb, var(--cerulean) 3%, #fff); }
+  .cl-row:hover { background: color-mix(in srgb, var(--accent) 3%, #fff); }
   .cl-id { font-size: 13px; font-weight: 600; color: var(--cool-gray-11); display: inline-flex; align-items: center; gap: 6px; }
   .cl-date, .cl-surgeon, .cl-solution { font-size: 13px; color: var(--cool-gray-10); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cl-status { justify-self: end; }
@@ -408,7 +408,7 @@
   /* Inbox drawer item */
   .inbox-list { display: flex; flex-direction: column; gap: 8px; max-width: 420px; }
   .inbox-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); background: #fff; text-decoration: none; color: inherit; }
-  .inbox-item:hover { border-color: var(--cerulean); background: var(--bg-subtle); }
+  .inbox-item:hover { border-color: var(--accent); background: var(--bg-subtle); }
   .inbox-dot { flex-shrink: 0; width: 8px; height: 8px; margin-top: 7px; background: var(--cool-gray-3); border-radius: 50%; }
   .inbox-item.is-unread .inbox-dot { background: #c81717; }
   .inbox-body { flex: 1; min-width: 0; }
@@ -417,8 +417,8 @@
   .inbox-title b { font-weight: 600; color: var(--cool-gray-9); margin-right: 4px; }
   .inbox-when { font-size: 12px; color: var(--cool-gray-8); flex-shrink: 0; }
   .inbox-sub { display: block; font-size: 12.5px; color: var(--cool-gray-9); margin-top: 3px; line-height: 1.45; }
-  /* @-mention pill — solid cerulean, reads as "@ Mentioned" */
-  .inbox-mention { display: inline-flex; align-items: center; gap: 4px; background: var(--cerulean); color: #fff; border-radius: 999px; padding: 1px 8px 1px 6px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.5; flex-shrink: 0; }
+  /* @-mention pill — solid accent, reads as "@ Mentioned" */
+  .inbox-mention { display: inline-flex; align-items: center; gap: 4px; background: var(--accent); color: #fff; border-radius: 999px; padding: 1px 8px 1px 6px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.5; flex-shrink: 0; }
   .inbox-mention::before { content: '@'; font-size: 12px; font-weight: 700; line-height: 1; margin-right: 1px; }
   /* Channel label — inline gray uppercase + trailing dot separator */
   .inbox-channel { display: inline; background: transparent; color: inherit; padding: 0; margin: 0; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -427,7 +427,7 @@
   /* ===== Multi-select filter widget (cases filter panel) ===== */
   .ms { position: relative; max-width: 240px; }
   .ms-trigger { width: 100%; display: flex; align-items: center; gap: 8px; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); background: #fff; padding: 8px 10px; font: inherit; font-size: 14px; color: var(--text); cursor: pointer; min-height: 38px; }
-  .ms.open .ms-trigger { border-color: var(--cerulean); }
+  .ms.open .ms-trigger { border-color: var(--accent); }
   .ms-display { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 4px; color: var(--text); line-height: 1.2; text-align: left; }
   .ms-chev { width: 14px; height: 14px; color: var(--cool-gray-9); flex-shrink: 0; transition: transform 0.12s; }
   .ms.open .ms-chev { transform: rotate(180deg); }
@@ -473,11 +473,11 @@
   /* ===== Comments thread tabs (with icons + red unread dot on icon) ===== */
   .comments-toggle { display: flex; gap: 0; padding: 3px; background: var(--cool-gray-1); border-radius: var(--radius-md); flex: 1; min-width: 0; max-width: 360px; }
   .ct-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 7px 14px; background: transparent; border: 0; border-radius: var(--radius-sm); font: inherit; font-size: 13px; font-weight: 600; color: var(--cool-gray-9); cursor: pointer; position: relative; }
-  .ct-btn.is-active { background: var(--cerulean); color: #fff; }
+  .ct-btn.is-active { background: var(--accent); color: #fff; }
   .ct-icon-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
   .ct-icon { width: 14px; height: 14px; }
   .ct-btn.has-unread .ct-icon-wrap::after { content: ''; position: absolute; top: -3px; right: -3px; width: 7px; height: 7px; background: #c81717; border-radius: 50%; border: 1.5px solid var(--cool-gray-1); }
-  .ct-btn.is-active.has-unread .ct-icon-wrap::after { border-color: var(--cerulean); }
+  .ct-btn.is-active.has-unread .ct-icon-wrap::after { border-color: var(--accent); }
 
   /* ===== External-post inline confirmation banner ===== */
   .composer-confirm { background: #fff; border: 1px solid color-mix(in srgb, #e04e39 35%, #fff); border-radius: var(--radius-md); box-shadow: 0 4px 16px rgba(232,137,36,0.10); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
@@ -491,11 +491,11 @@
   /* ===== Upload progress bar ===== */
   .upload-progress { background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 10px 12px; max-width: 360px; }
   .upload-progress-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--cool-gray-11); }
-  .upload-progress-row .btn-spinner { color: var(--cerulean); }
+  .upload-progress-row .btn-spinner { color: var(--accent); }
   .upload-progress-name { flex: 1; min-width: 0; font-weight: 600; }
   .upload-progress-pct { font-variant-numeric: tabular-nums; color: var(--cool-gray-9); font-size: 12px; flex-shrink: 0; }
   .upload-progress-bar { height: 4px; margin-top: 8px; background: var(--cool-gray-1); border-radius: 2px; overflow: hidden; }
-  .upload-progress-fill { height: 100%; background: var(--cerulean); transition: width 0.2s linear; }
+  .upload-progress-fill { height: 100%; background: var(--accent); transition: width 0.2s linear; }
 
   /* ===== Editable drawer chrome (sp-drawer pattern — Surgical Plan, Device Design, Order & Fulfillment) ===== */
   .sp-head { display: flex; align-items: flex-start; gap: 12px; padding: 0 0 16px; margin-bottom: 4px; border-bottom: 1px solid var(--hairline); max-width: 480px; }
@@ -628,13 +628,13 @@
 
       <h3 class="sg-h3">Brand</h3>
       <div class="sg-swatches">
-        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cerulean);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cerulean (hero)</div><div class="sg-swatch-token">--cerulean · #00b3ef</div></div></div>
-        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #019fd4;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cerulean Hover</div><div class="sg-swatch-token">--cerulean-hover · #019fd4</div></div></div>
-        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--gold-tips);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Gold Tips</div><div class="sg-swatch-token">--gold-tips · #fcb31c</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--accent);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Accent (hero)</div><div class="sg-swatch-token">--accent · #6366f1</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--accent-hover);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Accent Hover</div><div class="sg-swatch-token">--accent-hover · #4f46e5</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--gold);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Gold</div><div class="sg-swatch-token">--gold · #fcb31c</div></div></div>
         <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cool-gray-11);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Dark Text</div><div class="sg-swatch-token">--cool-gray-11 · #343741</div></div></div>
       </div>
-      <div class="sg-callout" style="margin-top: 18px; padding: 12px 14px; background: color-mix(in srgb, var(--cerulean) 8%, #fff); border: 1px solid color-mix(in srgb, var(--cerulean) 30%, #fff); border-radius: var(--radius-md); font-size: 13px; color: var(--cool-gray-11);">
-        <b>Brand cerulean is reserved.</b> Use <code>--cerulean</code> only on: primary buttons, the Progress timeline current node, the State row active marker, the PP-step current circle, and checkbox / radio accent. For everything else (incidental UI, hover states, status pills), use the dedicated tokens below — <code>--cerulean-hover</code> for hover, <code>--in-process-blue</code> for the In Process status. Keeping brand cerulean scarce keeps it "special."
+      <div class="sg-callout" style="margin-top: 18px; padding: 12px 14px; background: color-mix(in srgb, var(--accent) 8%, #fff); border: 1px solid color-mix(in srgb, var(--accent) 30%, #fff); border-radius: var(--radius-md); font-size: 13px; color: var(--cool-gray-11);">
+        <b>The accent color is reserved.</b> Use <code>--accent</code> only on: primary buttons, the progress-timeline current node, the state-row active marker, and checkbox / radio fill. For everything else (incidental UI, hover states, status pills), use the dedicated tokens — <code>--accent-hover</code> for hover, <code>--status-in-process</code> for the In Process status. Keeping the accent scarce keeps it "special."
       </div>
 
       <h3 class="sg-h3">Cool gray ramp</h3>
@@ -649,7 +649,7 @@
 
       <h3 class="sg-h3">Status</h3>
       <div class="sg-swatches">
-        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #1f6fd0;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">In Process</div><div class="sg-swatch-token">--in-process-blue · #1f6fd0</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--status-in-process);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">In Process</div><div class="sg-swatch-token">--status-in-process · #0891b2</div></div></div>
         <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #5e548e;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Review</div><div class="sg-swatch-token">#5e548e</div></div></div>
         <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #e88924;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Rework</div><div class="sg-swatch-token">#e88924</div></div></div>
         <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #c81717;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Blocked</div><div class="sg-swatch-token">#c81717</div></div></div>
@@ -761,7 +761,7 @@
         <div class="sg-tile-meta"><span class="sg-tile-label">Rules</span></div>
         <ul style="font-size: 13.5px; color: var(--cool-gray-10); line-height: 1.6; padding-left: 18px; margin: 0;">
           <li><b>Shape:</b> true 16×16 square. Use <code>aspect-ratio: 1 / 1</code> + <code>min-width</code>/<code>max-width: 16px</code> + <code>flex: 0 0 16px</code> + <code>padding: 0</code> so nothing inflates the box.</li>
-          <li><b>Color:</b> white fill with a <code>--cool-gray-3</code> 1.5px border when unchecked. On <code>:checked</code>, fill flips to <code>--cerulean</code> with a white SVG check (data URI). Don't rely on <code>accent-color</code> — some browsers leave the check mark black.</li>
+          <li><b>Color:</b> white fill with a <code>--cool-gray-3</code> 1.5px border when unchecked. On <code>:checked</code>, fill flips to <code>--accent</code> with a white SVG check (data URI). Don't rely on <code>accent-color</code> — some browsers leave the check mark black.</li>
           <li><b>Gap to label:</b> 16px in <code>.ms-option</code>. Keep similar breathing room in any new container (avoid &lt; 14px).</li>
           <li><b>Read-only drawers:</b> the <code>.sp-drawer.is-readonly</code> transparency rule excludes <code>input[type="checkbox"]</code>, so checkboxes inside a read-only drawer remain visible (border + fill intact) while <code>pointer-events: none</code> blocks toggling.</li>
           <li><b>Form-row scoping:</b> <code>.form-row input</code> styling (border, padding) only targets text-shaped inputs. Checkbox + radio inputs are excluded with <code>:not([type="checkbox"]):not([type="radio"])</code>.</li>

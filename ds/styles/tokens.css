@@ -1,99 +1,58 @@
 /* =========================================================================
-   Acumed Digital Surgery — brand tokens
-   All values traceable to the Acumed Brand Guidelines (03/2025).
-   No invented colors. No off-brand fonts.
+   Case Management — design tokens
    ========================================================================= */
 
 :root {
-  /* -----------------------------------------------------------------------
-     PRIMARY PALETTE
-     ----------------------------------------------------------------------- */
-  --cerulean:      #00b3ef;   /* Pantone 2995 — hero color. RESERVED for the brand-default
-                                 accent surfaces Adam called out in V5: primary buttons,
-                                 progress-timeline current node, state-row active marker,
-                                 PP-step current circle, checkbox/radio accent. Don't reuse
-                                 it for incidental UI — keeping it scarce keeps it "special".
-                                 (Jamie, V5 — codified after the In-Process pill conflict.) */
-  --cerulean-hover: #019fd4;  /* Slightly darker cerulean for hover/active. Was hardcoded ×21 in HTML files; tokenized in V5 cleanup. */
-  --in-process-blue: #1f6fd0;  /* Darker blue dedicated to the In-Process status. Intentionally
-                                  NOT --cerulean — see note above. Also clears WCAG AA (~5:1
-                                  on white) so the status pill's white text stays legible. */
-  --gold-tips:     #fcb31c;   /* Pantone 7409 — accent, KEEP UNDER 5% of design */
-  --cool-gray-11:  #343741;   /* Main dark tint — used for primary text, sidebar */
-  --cool-gray-1:   #dfe1df;   /* Lightest gray */
+  /* --- Primary accent. Reserved for hero UI: primary buttons, active
+         state markers, checkbox/radio fill. Kept scarce on purpose. --- */
+  --accent:         #6366f1;
+  --accent-hover:   #4f46e5;
 
-  /* Cool gray ramp (1 lightest -> 11 darkest) */
-  --cool-gray-2:   #d7d8d6;
-  --cool-gray-3:   #c7c9c8;
-  --cool-gray-4:   #b2b5b6;
-  --cool-gray-5:   #a9abac;
-  --cool-gray-6:   #a4a7a9;
-  --cool-gray-7:   #878a8f;
-  --cool-gray-8:   #797d82;
-  --cool-gray-9:   #5f6369;
-  --cool-gray-10:  #474c55;
+  /* --- Cool gray ramp (1 lightest → 11 darkest). --- */
+  --cool-gray-1:  #dfe1df;
+  --cool-gray-2:  #d7d8d6;
+  --cool-gray-3:  #c7c9c8;
+  --cool-gray-4:  #b2b5b6;
+  --cool-gray-5:  #a9abac;
+  --cool-gray-6:  #a4a7a9;
+  --cool-gray-7:  #878a8f;
+  --cool-gray-8:  #797d82;
+  --cool-gray-9:  #5f6369;
+  --cool-gray-10: #474c55;
+  --cool-gray-11: #343741;
 
-  /* -----------------------------------------------------------------------
-     SECONDARY PALETTE — small amounts only, for color-coding charts/callouts
-     ----------------------------------------------------------------------- */
-  --rio-grande:    #c4d82e;   /* Pantone 382 — used here for "completed" status */
-  --deluge:        #766aab;   /* Pantone 7676 */
-  --cerise:        #ee3780;   /* Pantone 213 */
-  --black-6:       #00000a;   /* Pantone Black 6 */
+  /* --- Warm accent (deviation flags, warnings — under 5% of surface). --- */
+  --gold:         #fcb31c;
 
-  /* -----------------------------------------------------------------------
-     TERTIARY PALETTE — only when more colors are required
-     ----------------------------------------------------------------------- */
-  --pantone-570:   #80c6af;   /* Soft mint */
-  --pantone-7417:  #e04e39;   /* Warning red — used here for "blocked" */
-  --pantone-307:   var(--rio-grande);   /* Acumed brand swatch — same hex as Rio Grande; aliased to avoid drift */
+  /* --- Status colors. --- */
+  --status-in-process: #0891b2;   /* cyan — deliberately not --accent */
+  --status-review:     #766aab;   /* purple */
+  --status-complete:   #1f8a4d;   /* forest green */
+  --status-rework:     #e88924;   /* orange */
+  --status-blocked:    #c81717;   /* red */
+  --status-on-hold:    #debb46;   /* warm gold */
+  --status-canceled:   #cb2457;   /* pink */
 
-  /* -----------------------------------------------------------------------
-     SEMANTIC ALIASES — every alias points at a brand token
-     ----------------------------------------------------------------------- */
-  --bg:            #ffffff;
-  --panel:         #ffffff;
-  --text:          var(--cool-gray-11);
-  --text-muted:    var(--cool-gray-9);
-  --border:        var(--cool-gray-1);
+  /* --- Semantic aliases. --- */
+  --bg:          #ffffff;
+  --panel:       #ffffff;
+  --bg-subtle:   #f7f8f9;
+  --text:        var(--cool-gray-11);
+  --text-muted:  var(--cool-gray-9);
+  --border:      var(--cool-gray-1);
+  --hairline:    rgba(52, 55, 65, 0.08);
+  --hover:       rgba(52, 55, 65, 0.06);
 
-  /* Status semantics (for state-progress UI) */
-  --status-in-process:  var(--in-process-blue);  /* darker blue — NOT brand cerulean (kept special for primary buttons) */
-  --status-review:      var(--deluge);         /* purple */
-  --status-complete:    var(--notify-green);   /* unified forest green (V5 — Jamie). Was --rio-grande lime; replaced for visual consistency w/ substep checks + status pills. */
-  --status-rework:      #e88924;               /* brand-aligned orange — added (no brand orange exists) */
-  --status-blocked:     var(--pantone-7417);   /* red */
-  --status-on-hold:     #debb46;               /* warm gold — matches status pill */
-  --status-canceled:    var(--cerise);         /* pink */
-  /* legacy alias — same as --status-complete */
-  --status-completed:   var(--notify-green);
-  /* NOTE: the Acumed brand palette has no distinct orange, so --status-rework
-     uses an added orange (#e88924). Every other status maps to a brand token. */
-
-  /* -----------------------------------------------------------------------
-     LAYOUT
-     ----------------------------------------------------------------------- */
-  --sidebar-w:     240px;
-  --topbar-h:     64px;
-  --radius-sm:     6px;
-  --radius-md:     8px;
-  --radius-lg:     12px;
-
-  /* Lighter hairline for card borders + dividers (subtler than cool-gray-1) */
-  --hairline:      rgba(52,55,65,0.08);
-  /* Very subtle grey fill — sticky bar + card heads.
-     Opaque (not a tint) so scrolling content can't bleed through the sticky bar. */
-  --bg-subtle:     #f7f8f9;
-  /* Subtle button hover wash */
-  --hover:         rgba(52,55,65,0.06);
-  /* Notification badge green — deeper than the brand lime for legibility with
-     white text. Intentional addition; not in the Acumed palette. */
-  --notify-green:  #1f8a4d;
+  /* --- Layout. --- */
+  --sidebar-w:  240px;
+  --topbar-h:   64px;
+  --radius-sm:  6px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
 }
 
 /* =========================================================================
-   TYPOGRAPHY
-   - Proxima Nova (Adobe Fonts — kit yfu1doh) everywhere: body, UI, titles.
+   Typography — Proxima Nova
    ========================================================================= */
 
 html, body {
