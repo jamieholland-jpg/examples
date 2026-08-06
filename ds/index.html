@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Digital Surgery Platform — Design System</title>
+<link rel="preconnect" href="https://use.typekit.net">
+<link rel="stylesheet" href="https://use.typekit.net/yfu1doh.css">
+<link rel="stylesheet" href="styles/tokens.css" />
+<style>
+  /* ===== Base ===== */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: 'proxima-nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--cool-gray-11); background: var(--bg-subtle); }
+  a { color: var(--cerulean); }
+  button { font-family: inherit; }
+  /* V7 — unified checkbox: appearance:none + cerulean fill + guaranteed
+     white SVG check. Locked to a true 16×16 square via aspect-ratio + min/max
+     width + flex shorthand so flex parents can't stretch the box. padding:0
+     defeats any inherited input padding from form-row styles. Radios keep
+     accent-color since native rendering is consistent. */
+  input[type="radio"] { accent-color: var(--cerulean); }
+  input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none;
+    width: 16px; height: 16px;
+    min-width: 16px; max-width: 16px;
+    aspect-ratio: 1 / 1;
+    flex: 0 0 16px;
+    margin: 0; padding: 0;
+    border: 1.5px solid var(--cool-gray-3);
+    border-radius: 3px;
+    background: #fff;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: background 0.1s, border-color 0.1s;
+  }
+  input[type="checkbox"]:hover { border-color: var(--cool-gray-7); }
+  input[type="checkbox"]:checked {
+    background-color: var(--cerulean);
+    border-color: var(--cerulean);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    background-size: 12px 12px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  input[type="checkbox"]:focus-visible { outline: 2px solid var(--cerulean); outline-offset: 1px; }
+
+  /* ===== Layout ===== */
+  .sg { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+  .sg-nav { background: var(--cool-gray-11); color: #fff; position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 24px 16px; }
+  .sg-nav-title { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.7px; margin: 18px 8px 8px; }
+  .sg-nav-title:first-of-type { margin-top: 0; }
+  .sg-nav a { display: block; padding: 7px 8px; color: rgba(255,255,255,0.82); font-size: 13px; text-decoration: none; border-radius: 6px; }
+  .sg-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .sg-nav a.brand { font-size: 15px; font-weight: 700; padding: 0; margin-bottom: 16px; color: #fff; display: inline-flex; align-items: center; gap: 8px; }
+  .sg-nav a.brand svg { width: 18px; height: 18px; color: var(--gold-tips); flex-shrink: 0; }
+
+  .sg-main { padding: 48px 56px 96px; max-width: 1080px; }
+  .sg-h1 { font-size: 32px; font-weight: 700; color: var(--cool-gray-11); margin: 0 0 8px; }
+  .sg-intro { font-size: 15px; color: var(--cool-gray-9); line-height: 1.55; margin: 0 0 40px; max-width: 640px; }
+  .sg-section { padding-top: 56px; padding-bottom: 8px; border-top: 1px solid var(--cool-gray-2); margin-top: 24px; }
+  .sg-section:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+  .sg-h2 { font-size: 22px; font-weight: 700; color: var(--cool-gray-11); margin: 0 0 6px; }
+  .sg-h3 { font-size: 14px; font-weight: 700; color: var(--cool-gray-11); text-transform: uppercase; letter-spacing: 0.5px; margin: 28px 0 12px; }
+  .sg-desc { font-size: 13.5px; color: var(--cool-gray-9); line-height: 1.55; margin: 0 0 20px; max-width: 640px; }
+
+  /* Specimen tiles */
+  .sg-tile { background: #fff; border: 1px solid var(--cool-gray-2); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .sg-tile-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .sg-tile-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--cool-gray-9); }
+  .sg-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .sg-stack { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Color swatches */
+  .sg-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+  .sg-swatch { background: #fff; border: 1px solid var(--cool-gray-2); border-radius: 8px; overflow: hidden; }
+  .sg-swatch-chip { height: 64px; }
+  .sg-swatch-meta { padding: 8px 10px; }
+  .sg-swatch-name { font-size: 12px; font-weight: 700; color: var(--cool-gray-11); }
+  .sg-swatch-token { font-family: 'Menlo', monospace; font-size: 11px; color: var(--cool-gray-9); margin-top: 2px; }
+
+  /* Typography spec */
+  .sg-type { display: grid; grid-template-columns: 200px 1fr; gap: 16px 24px; align-items: baseline; }
+  .sg-type-meta { font-family: 'Menlo', monospace; font-size: 11px; color: var(--cool-gray-9); }
+
+  /* ============================================
+     Reusable component CSS — copied/distilled from prototype.html.
+     This file is self-contained; it does not depend on prototype.html.
+     ============================================ */
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 34px; padding: 0 16px; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--cool-gray-2); background: #fff; color: var(--cool-gray-10); transition: background 0.12s, border-color 0.12s; }
+  .btn:hover { background: var(--hover); }
+  .btn-primary { background: var(--cerulean); border-color: var(--cerulean); color: #fff; }
+  .btn-primary:hover { background: var(--cerulean-hover); }
+  /* Outlined danger — matches the prototype's .btn-danger (white bg, red text, tint on hover) */
+  .btn-danger { background: #fff; border-color: color-mix(in srgb, var(--pantone-7417) 40%, #fff); color: var(--pantone-7417); }
+  .btn-danger:hover { background: color-mix(in srgb, var(--pantone-7417) 8%, #fff); }
+
+  /* Record collapse-all toggle + per-step files link */
+  .stack-toggle { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 0; padding: 4px 8px; border-radius: var(--radius-sm); font: inherit; font-size: 12px; font-weight: 600; color: var(--cool-gray-9); cursor: pointer; }
+  .stack-toggle:hover { background: var(--hover); color: var(--cool-gray-11); }
+  .stack-toggle svg { width: 12px; height: 12px; }
+  .step-files-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; background: transparent; border: 0; border-radius: var(--radius-sm); font: inherit; font-size: 13px; font-weight: 600; color: var(--cerulean); cursor: pointer; }
+  .step-files-link:hover { background: color-mix(in srgb, var(--cerulean) 8%, #fff); }
+  .step-files-link svg { width: 13px; height: 13px; }
+  .step-files-link .sfl-count { color: var(--cool-gray-9); font-weight: 500; }
+  .btn.is-active { background: var(--cool-gray-1); border-color: var(--cool-gray-3); color: var(--cool-gray-11); }
+  .btn svg { width: 16px; height: 16px; }
+
+  .action-btn { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px; border-radius: var(--radius-md); border: 1px solid var(--cool-gray-2); background: #fff; color: var(--cool-gray-10); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .action-btn:hover { background: var(--hover); color: var(--cool-gray-11); }
+  .action-btn svg { width: 16px; height: 16px; }
+  .action-btn.icon-only { padding: 0; width: 34px; justify-content: center; }
+  .action-btn.is-open { background: var(--cool-gray-1); border-color: var(--cool-gray-3); color: var(--cool-gray-11); }
+
+  .icon-btn { background: transparent; border: 0; width: 36px; height: 36px; border-radius: var(--radius-md); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cool-gray-9); }
+  .icon-btn:hover { background: var(--hover); color: var(--cool-gray-11); }
+  .icon-btn svg { width: 18px; height: 18px; }
+
+  /* Status pills */
+  .status-pill { display: inline-flex; align-items: center; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1; color: #fff; background: var(--status-color, #1f6fd0); }
+  .status-pill.sm { font-size: 11px; padding: 3px 9px; }
+  .status-pill.is-in-process { --status-color: #1f6fd0; }
+  .status-pill.is-review     { --status-color: #5e548e; }
+  .status-pill.is-complete   { --status-color: #1f8a4d; }  /* unified green (matches --notify-green) */
+  .status-pill.is-rework     { --status-color: #e88924; }
+  .status-pill.is-blocked    { --status-color: #c81717; }
+  .status-pill.is-on-hold    { --status-color: #debb46; }
+  .status-pill.is-canceled,
+  .status-pill.is-cancelled  { --status-color: #cb2457; }
+  .status-pill.is-shipped    { --status-color: #1f8a4d; }
+  .status-pill.is-delivered  { --status-color: #1f8a4d; }
+
+  /* Avatars */
+  .av { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: #fcb31c; color: #000; }
+  .av-sm { width: 26px; height: 26px; font-size: 10px; }
+  .av-lg { width: 44px; height: 44px; font-size: 14px; }
+
+  /* Form inputs */
+  .form-row { display: flex; flex-direction: column; gap: 6px; max-width: 360px; }
+  /* V7: scope to direct-child label + text-shaped inputs so nested labels
+     (.ms-option, .radio, .check-row) keep their flex layout and checkboxes/radios
+     aren't inflated by the 9px/12px input padding. */
+  .form-row > label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-7); }
+  .form-row input:not([type="checkbox"]):not([type="radio"]), .form-row select, .form-row textarea { width: 100%; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 9px 12px; font: inherit; font-size: 14px; color: var(--text); background: #fff; }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--cerulean); }
+  .form-row textarea { min-height: 80px; resize: vertical; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--cool-gray-11); cursor: pointer; padding: 4px 0; }
+  .radio-group { display: flex; gap: 16px; }
+  .radio { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; color: var(--cool-gray-11); }
+  .switch { position: relative; display: inline-flex; width: 28px; height: 16px; flex-shrink: 0; }
+  .switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .switch .track { position: absolute; inset: 0; border-radius: 999px; background: var(--cool-gray-3); }
+  .switch .track::before { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform 0.15s; box-shadow: 0 1px 2px rgba(52,55,65,0.3); }
+  .switch input:checked + .track { background: var(--cerulean); }
+  .switch input:checked + .track::before { transform: translateX(12px); }
+
+  /* Dropzone */
+  .dropzone { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 28px; border: 1.5px dashed var(--cool-gray-3); border-radius: var(--radius-md); background: var(--bg-subtle); color: var(--cool-gray-9); cursor: pointer; max-width: 400px; }
+  .dropzone:hover { border-color: var(--cerulean); background: color-mix(in srgb, var(--cerulean) 5%, #fff); }
+  .dropzone svg { width: 30px; height: 30px; color: var(--cool-gray-7); }
+  .dz-title { font-size: 13px; color: var(--cool-gray-11); font-weight: 600; }
+  .dz-sub { font-size: 12px; color: var(--cool-gray-9); }
+  .dz-browse { color: var(--cerulean); font-weight: 600; }
+  .dz-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-9); font-weight: 600; margin-bottom: 6px; }
+  .dz-label em { font-style: normal; font-weight: 400; color: var(--cool-gray-7); }
+
+  /* Case card */
+  .case-card { display: block; background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 15px 17px; text-decoration: none; color: inherit; max-width: 280px; }
+  .case-card:hover { border-color: var(--cerulean); box-shadow: 0 4px 12px rgba(52,55,65,0.08); transform: translateY(-1px); }
+  .case-card-id { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 600; color: var(--cool-gray-11); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--hairline); }
+  .case-card-id b { font-weight: 600; margin-right: 4px; color: var(--cool-gray-9); }
+  .case-card-field { font-size: 12px; color: var(--cool-gray-10); line-height: 1.55; }
+  .case-card-field b { font-weight: 600; color: var(--cool-gray-11); margin-right: 4px; }
+  .case-card-dev-icon { width: 13px; height: 13px; color: var(--gold-tips); margin-left: 5px; vertical-align: -2px; }
+
+  /* Lane (mini) */
+  .sg-lane { width: 280px; background: var(--bg-subtle); border: 1px solid var(--hairline); border-radius: var(--radius-md); padding: 14px 12px; display: flex; flex-direction: column; gap: 14px; }
+  .sg-lane-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 4px 10px; }
+  .sg-lane-name { font-size: 15px; font-weight: 600; color: var(--cool-gray-11); }
+  .sg-lane-count { width: 22px; height: 22px; border-radius: 50%; background: var(--cool-gray-2); color: var(--cool-gray-10); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+
+  /* Step alert */
+  .step-alert { display: flex; align-items: flex-start; gap: 9px; padding: 10px 12px; border-radius: var(--radius-md); font-size: 13px; line-height: 1.45; color: var(--cool-gray-11); background: color-mix(in srgb, var(--status-color, #e88924) 10%, #fff); border: 1px solid color-mix(in srgb, var(--status-color, #e88924) 32%, #fff); max-width: 540px; }
+  .step-alert .sa-icon { width: 17px; height: 17px; color: var(--status-color, #e88924); flex-shrink: 0; margin-top: 1px; }
+  .step-alert b { color: var(--status-color, #e88924); }
+  .step-alert.is-review   { --status-color: #5e548e; }
+  .step-alert.is-rework   { --status-color: #e88924; }
+  .step-alert.is-blocked  { --status-color: #c81717; }
+  .step-alert.is-on-hold  { --status-color: #debb46; }
+  .step-alert.is-canceled { --status-color: #cb2457; }
+
+  /* Inline confirmation (destructive in-drawer flows) */
+  .inline-confirm { background: #fff; border: 1px solid color-mix(in srgb, #c81717 35%, #fff); border-radius: var(--radius-md); box-shadow: 0 4px 16px rgba(200,23,23,0.10); padding: 12px 14px; max-width: 420px; display: flex; flex-direction: column; gap: 10px; }
+  .inline-confirm .ic-head { display: flex; align-items: flex-start; gap: 9px; }
+  .inline-confirm .ic-icon { width: 18px; height: 18px; color: #c81717; flex-shrink: 0; margin-top: 1px; }
+  .inline-confirm .ic-titlewrap { flex: 1; min-width: 0; }
+  .inline-confirm .ic-title { font-size: 14px; font-weight: 700; color: var(--cool-gray-11); line-height: 1.3; }
+  .inline-confirm .ic-sub { font-size: 12.5px; color: var(--cool-gray-9); line-height: 1.45; margin-top: 2px; }
+  .inline-confirm .ic-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* Case-level Attention banner (Phase 17 — portal On Hold / Cancelled / Action Required) */
+  .case-attention { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: var(--radius-md); font-size: 13.5px; line-height: 1.45; color: var(--cool-gray-11); margin-bottom: 18px; max-width: 540px; background: color-mix(in srgb, var(--status-color, #c81717) 10%, #fff); border: 1px solid color-mix(in srgb, var(--status-color, #c81717) 32%, #fff); }
+  .case-attention .ca-icon { width: 18px; height: 18px; color: var(--status-color, #c81717); flex-shrink: 0; margin-top: 1px; }
+  .case-attention .ca-title { color: var(--status-color, #c81717); font-weight: 700; margin-right: 6px; }
+  .case-attention.is-on-hold  { --status-color: #debb46; }
+  .case-attention.is-canceled { --status-color: #6b7280; }
+  .case-attention.is-blocked  { --status-color: #c81717; }
+
+  /* Meeting link row — input + open-in-new-tab + copy icon buttons (Phase 16) */
+  .sp-link-wrap { display: flex; gap: 6px; align-items: center; max-width: 480px; }
+  .sp-link-wrap input { flex: 1; min-width: 0; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 7px 10px; font: inherit; font-size: 13px; background: #fff; }
+  .sp-link-act { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-sm); color: var(--cool-gray-9); cursor: pointer; flex-shrink: 0; }
+  .sp-link-act:hover { color: var(--cool-gray-11); background: var(--hover); }
+  .sp-link-act svg { width: 14px; height: 14px; }
+
+  /* Inline section edit affordance (Phase 15 — portal Proposed meeting) */
+  .sp-section-edit-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .sp-section-edit { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; background: transparent; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-sm); font: inherit; font-size: 12px; font-weight: 600; color: var(--cool-gray-11); cursor: pointer; }
+  .sp-section-edit:hover { background: var(--bg-subtle); border-color: var(--cool-gray-4); }
+  .sp-section-edit svg { width: 11px; height: 11px; }
+
+  /* Progress timeline */
+  .timeline { display: flex; list-style: none; margin: 0; padding: 24px 16px; background: #fff; border: 1px solid var(--hairline); border-radius: var(--radius-md); }
+  .tl-step { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; position: relative; padding-top: 6px; }
+  .tl-step::before { content: ''; position: absolute; top: 16px; left: -50%; width: 100%; height: 2px; background: var(--cool-gray-2); }
+  .tl-step:first-child::before { display: none; }
+  .tl-step.is-done::before, .tl-step.is-current::before { background: var(--cool-gray-7); }
+  .tl-node { position: relative; z-index: 1; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 2px solid var(--cool-gray-3); display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+  .tl-node svg { width: 12px; height: 12px; }
+  .tl-step:not(.is-done) .tl-node svg { display: none; }
+  .tl-step.is-done .tl-node { background: var(--cool-gray-7); border-color: var(--cool-gray-7); }
+  .tl-step.is-upcoming .tl-node { border-color: var(--cool-gray-2); }
+  .tl-step.is-current .tl-node { background: var(--cerulean); border-color: var(--cerulean); box-shadow: 0 0 0 4px color-mix(in srgb, var(--cerulean) 16%, #fff); }
+  .tl-label { margin-top: 9px; font-size: 13px; line-height: 1.25; text-align: center; color: var(--cool-gray-9); max-width: 110px; }
+  .tl-step.is-upcoming .tl-label { color: var(--cool-gray-7); }
+  .tl-step.is-current .tl-label { color: var(--cool-gray-11); font-weight: 700; }
+  .tl-sub { margin-top: 3px; font-size: 12px; line-height: 1.2; text-align: center; color: var(--cool-gray-7); }
+
+  /* State row */
+  .state-stack { background: #fff; border: 1px solid var(--hairline); border-radius: var(--radius-md); overflow: hidden; }
+  .state-row { position: relative; display: grid; grid-template-columns: 56px 1fr; min-height: 56px; }
+  .state-rail { position: relative; }
+  .state-rail::before, .state-rail::after { content: ''; position: absolute; left: 24px; width: 2px; background: var(--cool-gray-2); transform: translateX(-50%); }
+  .state-rail::before { top: 0; height: 28px; }
+  .state-rail::after { top: 28px; bottom: 0; }
+  .state-row.is-first .state-rail::before { display: none; }
+  .state-row.is-last .state-rail::after { display: none; }
+  .marker { position: absolute; left: 24px; top: 28px; transform: translate(-50%, -50%); width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 2px solid var(--cool-gray-3); display: flex; align-items: center; justify-content: center; color: #fff; z-index: 1; }
+  .marker svg { width: 12px; height: 12px; }
+  .state-row.is-completed .marker { background: var(--cool-gray-7); border-color: var(--cool-gray-7); }
+  .state-row.is-active .marker { background: var(--cerulean); border-color: var(--cerulean); box-shadow: 0 0 0 4px color-mix(in srgb, var(--cerulean) 16%, #fff); }
+  .state-row.is-upcoming .marker { border-color: var(--cool-gray-2); }
+  .state-row:not(.is-completed) .marker svg { display: none; }
+  .state-main { padding: 16px 18px 16px 2px; border-bottom: 1px solid var(--hairline); }
+  .state-row.is-last .state-main { border-bottom: 0; }
+  .state-head { display: flex; align-items: center; gap: 12px; }
+  .state-titletext { font-size: 15px; font-weight: 600; color: var(--cool-gray-11); }
+  .state-row.is-upcoming .state-titletext { color: var(--cool-gray-7); }
+  .state-when { font-size: 12.5px; color: var(--text-muted); margin-left: auto; }
+  .state-when b { color: var(--cool-gray-10); font-weight: 600; }
+
+  /* File card (compact) */
+  .file-card { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--bg-subtle); border: 1px solid var(--cool-gray-1); border-radius: var(--radius-md); max-width: 420px; }
+  .f-name { font-size: 13.5px; font-weight: 600; color: var(--cool-gray-11); flex: 1; min-width: 0; }
+  .f-sub { font-size: 12px; color: var(--cool-gray-9); }
+  .file-act { width: 28px; height: 28px; border-radius: var(--radius-sm); border: 0; background: transparent; color: var(--cool-gray-9); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+  .file-act:hover { background: var(--hover); color: var(--cool-gray-11); }
+  .file-act svg { width: 16px; height: 16px; }
+
+  /* Breadcrumb */
+  .breadcrumb { display: inline-flex; align-items: center; gap: 8px; padding: 14px 16px; background: var(--bg-subtle); border: 1px solid var(--hairline); border-radius: var(--radius-md); }
+  .crumb { font-size: 14px; color: var(--cool-gray-10); text-decoration: none; }
+  .crumb.current { color: var(--cool-gray-11); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .crumb-sep { display: inline-flex; color: var(--cool-gray-4); }
+  .crumb-sep svg { width: 18px; height: 18px; }
+
+  /* Substep card */
+  .substep { border: 1px solid var(--hairline); border-radius: var(--radius-md); overflow: hidden; background: #fff; max-width: 540px; }
+  .substep-top { display: flex; align-items: center; gap: 9px; padding: 10px 12px; background: var(--bg-subtle); }
+  .substep-check { width: 18px; height: 18px; border-radius: 50%; background: #1f8a4d; color: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .substep-check svg { width: 11px; height: 11px; }
+  .substep-name { font-size: 13.5px; font-weight: 600; color: var(--cool-gray-11); flex: 1; }
+  .substep-meta { font-size: 12px; color: var(--text-muted); }
+  .substep-chev { width: 16px; height: 16px; color: var(--cool-gray-7); }
+  /* Parallel branch group. The grouping
+     is communicated per-step by a link icon + sub-letter pp-num (2a/2b/2c);
+     no wrapper rail or pill. */
+  .substep-parallel-group { display: flex; flex-direction: column; gap: 10px; max-width: 540px; margin: 0; }
+
+  /* Pp-step card */
+  .pp-step { border: 1px solid var(--hairline); border-radius: var(--radius-md); background: #fff; max-width: 540px; }
+  .pp-step-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--bg-subtle); border: 0; width: 100%; cursor: pointer; }
+  .pp-num { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--cerulean); color: #fff; font-size: 12px; font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pp-title { font-size: 14px; font-weight: 700; color: var(--cool-gray-11); flex: 1; text-align: left; }
+  .pp-chev { width: 16px; height: 16px; color: var(--cool-gray-7); }
+
+  /* Modal — used by Confirm dialog + Step record modal in the prototype */
+  .modal { background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 560px; border: 1px solid var(--cool-gray-2); }
+  .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 22px; border-bottom: 1px solid var(--hairline); }
+  .modal-head h3 { margin: 0; font-size: 19px; color: var(--cool-gray-11); }
+  .modal-head p { margin: 3px 0 0; font-size: 13px; color: var(--text-muted); }
+  .modal-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 22px; border-top: 1px solid var(--hairline); }
+
+  /* Input Review additional-details card */
+  .ir-card { background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); max-width: 560px; }
+  .ir-card-head { padding: 12px 16px; border-bottom: 1px solid var(--hairline); font-size: 15px; font-weight: 700; color: var(--cool-gray-11); }
+  .ir-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 16px; }
+  .ir-card-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--hairline); }
+  .ir-section { border-top: 1px solid var(--hairline); padding-top: 12px; }
+  .ir-section:first-child { border-top: 0; padding-top: 0; }
+  .ir-section-title { font-size: 13px; font-weight: 700; color: var(--cool-gray-11); margin-bottom: 10px; }
+  .ir-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; align-items: start; margin-bottom: 10px; }
+  .ir-grid:last-child { margin-bottom: 0; }
+  .ir-card .form-row { margin-bottom: 0; }
+  .ir-card label,
+  .ir-card .form-row label { font-size: 12px; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--cool-gray-11); margin-bottom: 6px; display: block; }
+  .ir-card select, .ir-card input[type="date"], .ir-card input[type="text"], .ir-card textarea { width: 100%; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; color: var(--cool-gray-11); background: #fff; }
+  .ir-card textarea { min-height: 56px; resize: vertical; }
+  .ir-readonly { font-size: 13px; color: var(--cool-gray-11); padding: 8px 0; font-variant-numeric: tabular-nums; }
+  .radio-row-group { display: flex; gap: 14px; padding: 6px 0; }
+  .radio-row { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--cool-gray-11); cursor: pointer; }
+  .radio-row input { accent-color: var(--cerulean); }
+  .req-mark { color: var(--pantone-7417); margin-left: 2px; }
+  .ir-note { font-size: 12px; color: var(--cool-gray-9); align-self: end; padding: 8px 0; }
+  .ir-note em { font-style: italic; }
+
+  /* Input Review read-only snapshot */
+  .ir-readonly-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+  .ir-readonly-section-title { font-size: 12px; font-weight: 700; color: var(--cool-gray-9); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 8px; }
+  .ir-readonly-group .ir-readonly-section-title:first-child { margin-top: 0; }
+  .ss-field { font-size: 13px; }
+  .ss-field .ss-k { color: var(--cool-gray-9); }
+  .ss-field .ss-v { color: var(--cool-gray-11); font-weight: 500; }
+  /* Inline file link inside ss-field rows */
+  .ss-file-link { color: var(--cerulean); text-decoration: none; border-bottom: 1px dotted color-mix(in srgb, var(--cerulean) 40%, #fff); cursor: pointer; }
+  .ss-file-link:hover { color: var(--cerulean-hover); border-bottom-color: var(--cerulean); }
+
+  /* Surgeon Approval — V6 Phase 28 */
+  .sa-row { display: flex; gap: 10px; }
+  .surgeon-approval-actions[hidden],
+  .surgeon-approve-panel[hidden],
+  .surgeon-reject-panel[hidden] { display: none; }
+  .surgeon-approve-panel,
+  .surgeon-reject-panel { background: var(--bg-subtle); border: 1px solid var(--hairline); border-radius: var(--radius-md); padding: 14px 16px; }
+  .btn[aria-disabled="true"],
+  .btn.is-disabled { background: var(--cool-gray-2); border-color: var(--cool-gray-2); color: var(--cool-gray-7); cursor: not-allowed; }
+  .surgeon-approve-panel,
+  .surgeon-reject-panel { max-width: 540px; }
+
+  /* Files-folder flash highlight */
+  .ff-flash-demo { border: 1px solid var(--hairline); padding: 12px; border-radius: var(--radius-md); max-width: 540px; transition: background 0.4s; background: color-mix(in srgb, var(--cerulean) 10%, #fff); color: var(--cool-gray-11); font-size: 13px; }
+
+  /* Hospital hover tooltip */
+  .hospital-wrap { position: relative; display: inline-block; }
+  .hospital-name { border-bottom: 1px dotted var(--cool-gray-7); cursor: help; }
+  .hospital-popover { display: none; position: absolute; top: calc(100% + 6px); left: 0; background: var(--cool-gray-11); color: #fff; font-size: 11px; line-height: 1.4; padding: 8px 10px; border-radius: var(--radius-sm); box-shadow: 0 4px 12px rgba(52,55,65,0.18); z-index: 40; white-space: nowrap; flex-direction: column; gap: 4px; }
+  .hospital-wrap:hover .hospital-popover { display: flex; }
+  .hospital-row { color: #fff; }
+
+
+  /* View toggle (Board ↔ List) */
+  .view-toggle { display: inline-flex; align-items: center; background: var(--bg-subtle); border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 2px; height: 34px; }
+  .view-toggle-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 28px; border: 0; background: transparent; padding: 0; border-radius: var(--radius-sm); color: var(--cool-gray-9); cursor: pointer; }
+  .view-toggle-btn:hover { color: var(--cool-gray-11); }
+  .view-toggle-btn svg { width: 15px; height: 15px; }
+  .view-toggle-btn.is-active { background: #fff; color: var(--cool-gray-11); box-shadow: 0 1px 2px rgba(52,55,65,0.08); }
+
+  /* Lane status filter (standalone widget — also lives in section heads on list view) */
+  .lane-sort { position: relative; display: inline-block; }
+  .lane-sort-btn { width: 22px; height: 22px; padding: 0; border-radius: 50%; background: transparent; border: 0; color: var(--cool-gray-9); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+  .lane-sort-btn:hover { background: var(--cool-gray-2); color: var(--cool-gray-11); }
+  .lane-sort.open .lane-sort-btn { background: var(--cool-gray-2); color: var(--cool-gray-11); }
+  .lane-sort-btn svg { width: 14px; height: 14px; }
+  .lane-sort-menu { position: relative; min-width: 160px; background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); box-shadow: 0 6px 20px rgba(52,55,65,0.12); padding: 4px; }
+  .lane-sort-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 10px; background: transparent; border: 0; border-radius: var(--radius-sm); font: inherit; font-size: 13px; color: var(--cool-gray-10); cursor: pointer; text-align: left; }
+  .lane-sort-item:hover { background: var(--hover); color: var(--cool-gray-11); }
+  .lane-sort-item.is-active { background: var(--cool-gray-1); color: var(--cool-gray-11); font-weight: 600; }
+  .lane-sort-item-check { width: 14px; height: 14px; color: var(--cerulean); opacity: 0; flex-shrink: 0; }
+  .lane-sort-item.is-active .lane-sort-item-check { opacity: 1; }
+  .lane-sort-item.is-empty { color: var(--cool-gray-7); }
+  .lane-sort-item-count { margin-left: auto; padding: 1px 7px; background: var(--cool-gray-1); color: var(--cool-gray-9); font-size: 11px; font-weight: 600; border-radius: 999px; font-variant-numeric: tabular-nums; }
+  .lane-sort-item.is-empty .lane-sort-item-count { display: none; }
+
+  /* Unread dot indicators */
+  .icon-btn.has-unread, .action-btn.has-unread { position: relative; }
+  .icon-btn.has-unread::after { content: ''; position: absolute; top: 5px; right: 6px; width: 8px; height: 8px; background: #c81717; border-radius: 50%; border: 2px solid #fff; }
+  .action-btn.has-unread::after { content: ''; position: absolute; top: 6px; left: 22px; width: 8px; height: 8px; background: #c81717; border-radius: 50%; border: 2px solid #fff; }
+
+  /* List view — section + row */
+  .cases-list { display: flex; flex-direction: column; gap: 14px; max-width: 720px; }
+  .cases-list-section { background: var(--bg-subtle); border: 1px solid var(--hairline); border-radius: var(--radius-md); }
+  .cases-list-section-head { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 16px; }
+  .cl-section-name { font-size: 15px; font-weight: 600; color: var(--cool-gray-11); }
+  .cl-section-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--cool-gray-2); color: var(--cool-gray-10); font-size: 11px; font-weight: 600; }
+  .cl-spacer { flex: 1; }
+  .cl-chev { width: 14px; height: 14px; color: var(--cool-gray-9); flex-shrink: 0; transform: rotate(90deg); }
+  .cases-list-section .cl-rows { background: #fff; border-top: 1px solid var(--hairline); border-bottom-left-radius: calc(var(--radius-md) - 1px); border-bottom-right-radius: calc(var(--radius-md) - 1px); }
+  .cl-row { display: grid; grid-template-columns: 130px 110px 130px 1fr 120px 36px; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--hairline); text-decoration: none; color: inherit; }
+  .cl-row:last-child { border-bottom: 0; }
+  .cl-row:hover { background: color-mix(in srgb, var(--cerulean) 3%, #fff); }
+  .cl-id { font-size: 13px; font-weight: 600; color: var(--cool-gray-11); display: inline-flex; align-items: center; gap: 6px; }
+  .cl-date, .cl-surgeon, .cl-solution { font-size: 13px; color: var(--cool-gray-10); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cl-status { justify-self: end; }
+  .cl-newtab { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; color: var(--cool-gray-7); border-radius: 4px; }
+  .cl-newtab svg { width: 13px; height: 13px; }
+
+  /* Inbox drawer item */
+  .inbox-list { display: flex; flex-direction: column; gap: 8px; max-width: 420px; }
+  .inbox-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); background: #fff; text-decoration: none; color: inherit; }
+  .inbox-item:hover { border-color: var(--cerulean); background: var(--bg-subtle); }
+  .inbox-dot { flex-shrink: 0; width: 8px; height: 8px; margin-top: 7px; background: var(--cool-gray-3); border-radius: 50%; }
+  .inbox-item.is-unread .inbox-dot { background: #c81717; }
+  .inbox-body { flex: 1; min-width: 0; }
+  .inbox-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .inbox-title { font-size: 14px; font-weight: 600; color: var(--cool-gray-11); display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+  .inbox-title b { font-weight: 600; color: var(--cool-gray-9); margin-right: 4px; }
+  .inbox-when { font-size: 12px; color: var(--cool-gray-8); flex-shrink: 0; }
+  .inbox-sub { display: block; font-size: 12.5px; color: var(--cool-gray-9); margin-top: 3px; line-height: 1.45; }
+  /* @-mention pill — solid cerulean, reads as "@ Mentioned" */
+  .inbox-mention { display: inline-flex; align-items: center; gap: 4px; background: var(--cerulean); color: #fff; border-radius: 999px; padding: 1px 8px 1px 6px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.5; flex-shrink: 0; }
+  .inbox-mention::before { content: '@'; font-size: 12px; font-weight: 700; line-height: 1; margin-right: 1px; }
+  /* Channel label — inline gray uppercase + trailing dot separator */
+  .inbox-channel { display: inline; background: transparent; color: inherit; padding: 0; margin: 0; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inbox-channel::after { content: ' · '; font-weight: 400; margin: 0 2px 0 1px; }
+
+  /* ===== Multi-select filter widget (cases filter panel) ===== */
+  .ms { position: relative; max-width: 240px; }
+  .ms-trigger { width: 100%; display: flex; align-items: center; gap: 8px; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); background: #fff; padding: 8px 10px; font: inherit; font-size: 14px; color: var(--text); cursor: pointer; min-height: 38px; }
+  .ms.open .ms-trigger { border-color: var(--cerulean); }
+  .ms-display { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 4px; color: var(--text); line-height: 1.2; text-align: left; }
+  .ms-chev { width: 14px; height: 14px; color: var(--cool-gray-9); flex-shrink: 0; transition: transform 0.12s; }
+  .ms.open .ms-chev { transform: rotate(180deg); }
+  .ms-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--cool-gray-1); color: var(--cool-gray-11); font-size: 12px; font-weight: 500; border-radius: 4px; padding: 2px 4px 2px 7px; line-height: 1.2; }
+  .ms-chip-x { width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center; border-radius: 3px; cursor: pointer; color: var(--cool-gray-9); background: transparent; border: 0; padding: 0; }
+  .ms-chip-x svg { width: 10px; height: 10px; }
+  .ms-more { font-size: 12px; color: var(--cool-gray-9); padding: 2px 4px; }
+  .ms-popover { position: relative; margin-top: 4px; background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); box-shadow: 0 8px 24px rgba(52,55,65,0.14); max-height: 260px; overflow: hidden; display: flex; flex-direction: column; }
+  .ms-search-row { padding: 8px; border-bottom: 1px solid var(--cool-gray-1); }
+  .ms-search { width: 100%; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-sm); padding: 6px 10px; font: inherit; font-size: 13px; outline: none; }
+  .ms-options { flex: 1; overflow-y: auto; padding: 4px; }
+  /* V7: 16px gap so the text label has clear breathing room from the
+     16×16 checkbox. Checkbox styling itself is handled by the global rule above. */
+  .ms-option { display: flex; align-items: center; gap: 16px; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; color: var(--cool-gray-11); cursor: pointer; }
+  .ms-option:hover { background: var(--hover); }
+
+  /* ===== Date single/range toggle ===== */
+  .date-range { display: flex; align-items: stretch; gap: 6px; min-width: 0; max-width: 320px; }
+  .dr-tabs { display: inline-flex; align-items: center; background: var(--bg-subtle); border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 2px; flex-shrink: 0; }
+  .dr-tab { border: 0; background: transparent; padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 600; color: var(--cool-gray-9); cursor: pointer; border-radius: var(--radius-sm); }
+  .dr-tab.is-active { background: #fff; color: var(--cool-gray-11); box-shadow: 0 1px 2px rgba(52,55,65,0.08); }
+  .dr-pane { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+  .dr-pane input[type="date"] { flex: 1; min-width: 0; width: 100%; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 8px 10px; font: inherit; font-size: 14px; color: var(--text); background: #fff; min-height: 38px; }
+  .dr-sep { font-size: 12px; color: var(--cool-gray-9); flex-shrink: 0; }
+
+  /* ===== Multi-deviation popover (case detail breadcrumb) ===== */
+  .deviation-wrap { position: relative; display: inline-flex; }
+  .deviation-flag { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: var(--radius-sm); border: 0; background: transparent; color: var(--cool-gray-9); cursor: pointer; }
+  .deviation-flag:hover { background: var(--hover); color: var(--cool-gray-11); }
+  .deviation-flag svg { width: 17px; height: 17px; }
+  .deviation-wrap.open .deviation-flag { background: var(--cool-gray-1); color: var(--cool-gray-11); }
+  .dev-popover { position: absolute; top: calc(100% + 6px); left: 0; min-width: 200px; background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); box-shadow: 0 8px 24px rgba(52,55,65,0.14); z-index: 30; padding: 6px; }
+  .dev-popover-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-7); padding: 6px 8px 4px; }
+  .dev-popover-list { display: flex; flex-direction: column; gap: 2px; }
+  .dev-popover-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: transparent; border: 0; border-radius: var(--radius-sm); font: inherit; font-size: 13px; color: var(--cool-gray-11); cursor: pointer; text-align: left; }
+  .dev-popover-item:hover { background: var(--hover); }
+  .dev-popover-item .dp-textwrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .dev-popover-item .dp-num { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .dev-popover-item .dp-desc { font-size: 12px; color: var(--cool-gray-9); line-height: 1.3; }
+  .dev-popover-item .dp-copy { display: inline-flex; align-items: center; justify-content: center; color: var(--cool-gray-7); }
+  .dev-popover-item .dp-copy svg { width: 13px; height: 13px; }
+
+  /* ===== Comments thread tabs (with icons + red unread dot on icon) ===== */
+  .comments-toggle { display: flex; gap: 0; padding: 3px; background: var(--cool-gray-1); border-radius: var(--radius-md); flex: 1; min-width: 0; max-width: 360px; }
+  .ct-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 7px 14px; background: transparent; border: 0; border-radius: var(--radius-sm); font: inherit; font-size: 13px; font-weight: 600; color: var(--cool-gray-9); cursor: pointer; position: relative; }
+  .ct-btn.is-active { background: var(--cerulean); color: #fff; }
+  .ct-icon-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
+  .ct-icon { width: 14px; height: 14px; }
+  .ct-btn.has-unread .ct-icon-wrap::after { content: ''; position: absolute; top: -3px; right: -3px; width: 7px; height: 7px; background: #c81717; border-radius: 50%; border: 1.5px solid var(--cool-gray-1); }
+  .ct-btn.is-active.has-unread .ct-icon-wrap::after { border-color: var(--cerulean); }
+
+  /* ===== External-post inline confirmation banner ===== */
+  .composer-confirm { background: #fff; border: 1px solid color-mix(in srgb, #e04e39 35%, #fff); border-radius: var(--radius-md); box-shadow: 0 4px 16px rgba(232,137,36,0.10); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
+  .composer-confirm .cc-head { display: flex; align-items: flex-start; gap: 9px; }
+  .composer-confirm .cc-icon { width: 18px; height: 18px; color: #e04e39; flex-shrink: 0; margin-top: 1px; }
+  .composer-confirm .cc-title { font-size: 14px; font-weight: 700; color: var(--cool-gray-11); line-height: 1.3; }
+  .composer-confirm .cc-sub { font-size: 12.5px; color: var(--cool-gray-9); line-height: 1.45; margin-top: 2px; }
+  .composer-confirm .cc-preview { background: var(--bg-subtle); border: 1px solid var(--cool-gray-1); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 13px; color: var(--cool-gray-11); line-height: 1.45; }
+  .composer-confirm .cc-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* ===== Upload progress bar ===== */
+  .upload-progress { background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 10px 12px; max-width: 360px; }
+  .upload-progress-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--cool-gray-11); }
+  .upload-progress-row .btn-spinner { color: var(--cerulean); }
+  .upload-progress-name { flex: 1; min-width: 0; font-weight: 600; }
+  .upload-progress-pct { font-variant-numeric: tabular-nums; color: var(--cool-gray-9); font-size: 12px; flex-shrink: 0; }
+  .upload-progress-bar { height: 4px; margin-top: 8px; background: var(--cool-gray-1); border-radius: 2px; overflow: hidden; }
+  .upload-progress-fill { height: 100%; background: var(--cerulean); transition: width 0.2s linear; }
+
+  /* ===== Editable drawer chrome (sp-drawer pattern — Surgical Plan, Device Design, Order & Fulfillment) ===== */
+  .sp-head { display: flex; align-items: flex-start; gap: 12px; padding: 0 0 16px; margin-bottom: 4px; border-bottom: 1px solid var(--hairline); max-width: 480px; }
+  .sp-head-text { flex: 1; min-width: 0; }
+  .sp-head-mode-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-9); }
+  .sp-head-mode-sub { font-size: 12.5px; color: var(--cool-gray-9); margin-top: 2px; line-height: 1.4; }
+  .sp-head-actions { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .sp-meeting { background: var(--bg-subtle); border: 1px solid var(--hairline); border-radius: var(--radius-md); padding: 12px 14px; max-width: 480px; }
+  .sp-meeting-h { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-7); margin-bottom: 8px; }
+  .sp-plan-card { border: 1px solid var(--hairline); border-radius: var(--radius-md); padding: 16px 18px 18px; background: #fff; max-width: 480px; }
+  .sp-plan-head {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%;
+    margin: -16px -18px 0; padding: 14px 18px;
+    background: transparent; border: 0;
+    font: inherit; text-align: left; cursor: pointer;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .sp-plan-head:hover { background: var(--hover); }
+  .sp-plan-chev { width: 14px; height: 14px; color: var(--cool-gray-9); transition: transform 0.15s; flex-shrink: 0; }
+  .sp-plan-card.is-collapsed .sp-plan-chev { transform: rotate(-90deg); }
+  .sp-plan-title { font-size: 14px; font-weight: 700; color: var(--cool-gray-11); margin: 0; }
+  .sp-plan-body { padding-top: 14px; }
+  .sp-plan-card.is-collapsed .sp-plan-body > :not(.sp-plan-summary) { display: none; }
+  .sp-plan-card.is-collapsed .sp-plan-body > .sp-plan-summary { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+  .sp-plan-summary { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--hairline); }
+  .sp-sub-card { background: var(--bg-subtle); border: 1px solid var(--hairline); border-radius: var(--radius-md); padding: 12px 14px; max-width: 480px; }
+  .sp-sub-card-h { font-size: 12.5px; font-weight: 700; color: var(--cool-gray-11); margin-bottom: 10px; }
+
+  /* ===== Device Design card (Phase 13) — count header, collapse chevron, compressed grid ===== */
+  .dd-count { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-9); margin-bottom: 12px; }
+  .dd-card { border: 1px solid var(--hairline); border-radius: var(--radius-md); background: #fff; overflow: hidden; }
+  .dd-card-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-subtle); border-bottom: 1px solid var(--hairline); }
+  .dd-card.is-collapsed .dd-card-head { border-bottom: 0; }
+  .dd-card-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--cool-gray-2); color: var(--cool-gray-11); font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .dd-card-part { flex: 1; min-width: 0; font-size: 13px; font-weight: 700; color: var(--cool-gray-11); }
+  .dd-card-desc { display: block; font-size: 12px; font-weight: 500; color: var(--cool-gray-9); margin-top: 2px; }
+  .dd-card-collapse, .dd-card-remove { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: transparent; border: 0; border-radius: var(--radius-sm); color: var(--cool-gray-7); cursor: pointer; }
+  .dd-card-collapse:hover, .dd-card-remove:hover { background: var(--hover); color: var(--cool-gray-11); }
+  .dd-card-collapse svg, .dd-card-remove svg { width: 14px; height: 14px; }
+  .panel-export { width: 100%; }
+  /* Case Report collapsible section (V6 — DD-scoped) */
+  .dd-report { margin-top: 18px; border: 1px solid var(--hairline); border-radius: var(--radius-md); background: #fff; overflow: hidden; }
+  .dd-report-head { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; background: var(--bg-subtle); border: 0; border-bottom: 1px solid var(--hairline); font: inherit; text-align: left; cursor: pointer; }
+  .dd-report-head:hover { background: var(--hover); }
+  .dd-report-chev { width: 14px; height: 14px; color: var(--cool-gray-9); transition: transform 0.15s; flex-shrink: 0; }
+  .dd-report.is-collapsed .dd-report-chev { transform: rotate(-90deg); }
+  .dd-report.is-collapsed .dd-report-head { border-bottom: 0; }
+  .dd-report-title { font-size: 13px; font-weight: 700; color: var(--cool-gray-11); }
+  .dd-report-body { padding: 14px; display: flex; flex-direction: column; }
+  .dd-report.is-collapsed .dd-report-body { display: none; }
+
+  /* ===== Order & Fulfillment (Phase 14) — invoiced-item head + ship-to toggle ===== */
+  .of-group { background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); overflow: hidden; }
+  .of-group-head { padding: 10px 14px; background: var(--bg-subtle); border-bottom: 1px solid var(--hairline); }
+  .of-group-title { font-size: 13.5px; font-weight: 700; color: var(--cool-gray-11); }
+  .of-group-body { padding: 8px 14px 14px; }
+  .of-iv-head { display: grid; grid-template-columns: 1fr 52px 30px; gap: 4px 8px; align-items: center; padding: 4px 14px 12px; border-bottom: 1px dashed var(--hairline); margin: 0 -14px 12px; }
+  .of-iv-head > label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-7); font-weight: 700; margin: 0; }
+  .of-iv-head > select,
+  .of-iv-head > input { border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 7px 10px; font: inherit; font-size: 13px; background: #fff; color: var(--text); min-height: 36px; width: 100%; }
+  .of-prow-heads, .of-prow { display: grid; grid-template-columns: 1fr 52px 108px 30px; gap: 8px; }
+  .of-prow-heads { padding: 6px 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-7); font-weight: 700; }
+  .of-prow { align-items: center; padding: 4px 0; }
+  .of-prow > select,
+  .of-prow > input { border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); padding: 7px 10px; font: inherit; font-size: 13px; background: #fff; min-height: 36px; width: 100%; }
+  .of-shipment { background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); }
+  .of-shipment-body { padding: 12px 14px; }
+  .of-shipto-toggle { display: inline-flex; gap: 0; background: var(--cool-gray-1); padding: 3px; border-radius: var(--radius-md); margin-bottom: 8px; }
+  .of-shipto-toggle .ct-btn { padding: 5px 12px; font-size: 12.5px; }
+  .of-shipto-default-meta { font-size: 11.5px; color: var(--cool-gray-9); margin-top: 4px; }
+  /* O&F shipment summary card (V6) — used by the per-shipment Edit-removed tile */
+  .of-ship-card { background: #fff; border: 1px solid var(--cool-gray-2); border-radius: var(--radius-md); overflow: hidden; }
+  .of-ship-card-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg-subtle); border-bottom: 1px solid var(--hairline); }
+  .of-ship-card-title { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 700; color: var(--cool-gray-11); }
+  .of-ship-card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 14px; }
+  .of-ship-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 16px; margin: 0; }
+  .of-ship-info-row { margin: 0; }
+  .of-ship-info-row.is-full { grid-column: 1 / -1; }
+  .of-ship-info dt { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cool-gray-7); font-weight: 700; margin-bottom: 2px; }
+  .of-ship-info dd { margin: 0; font-size: 13.5px; color: var(--cool-gray-11); font-weight: 500; }
+
+  /* Saving spinner */
+  .btn-spinner { width: 12px; height: 12px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; display: inline-block; animation: sg-spin 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes sg-spin { to { transform: rotate(360deg); } }
+
+  /* "Open in new tab" affordance on case cards */
+  .sg-card-with-newtab { position: relative; }
+  .sg-card-with-newtab .case-card-newtab { position: absolute; bottom: 8px; right: 8px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--cool-gray-7); border-radius: 4px; }
+  .sg-card-with-newtab .case-card-newtab svg { width: 13px; height: 13px; }
+
+  /* ============================================ */
+</style>
+</head>
+<body>
+
+<div class="sg">
+
+  <!-- ===== Side nav ===== -->
+  <nav class="sg-nav">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="12"/><polyline points="22 8.5 12 12 2 8.5"/></svg>
+      Digital Surgery
+    </a>
+
+    <div class="sg-nav-title">Foundations</div>
+    <a href="#colors">Colors</a>
+    <a href="#typography">Typography</a>
+    <a href="#spacing">Spacing &amp; radius</a>
+
+    <div class="sg-nav-title">Components</div>
+    <a href="#buttons">Buttons</a>
+    <a href="#checkboxes">Checkboxes</a>
+    <a href="#inputs">Form inputs</a>
+    <a href="#dropzone">Dropzone</a>
+    <a href="#status-pills">Status pills</a>
+    <a href="#avatars">Avatars</a>
+    <a href="#step-alert">Step alerts</a>
+    <a href="#file-card">File card</a>
+    <a href="#breadcrumb">Breadcrumb</a>
+    <a href="#case-type">Case Type icons</a>
+
+    <a href="#unread-indicators">Unread indicators</a>
+    <a href="#lane-filter">Lane status filter</a>
+    <a href="#multi-select">Multi-select filter</a>
+    <a href="#date-range">Date single/range</a>
+    <a href="#deviation-popover">Deviation popover</a>
+    <a href="#comments-tabs">Comments thread tabs</a>
+    <a href="#external-confirm">External-post confirm</a>
+    <a href="#upload-progress">Upload progress</a>
+    <a href="#qc-buttons">QC Pass / Fail</a>
+    <a href="#confirm-modal">Confirm modal</a>
+    <a href="#input-review-card">Input Review card</a>
+    <a href="#input-review-readonly">Input Review snapshot</a>
+    <a href="#surgeon-approval">Surgeon Approval</a>
+    <a href="#inline-file-link">Inline file link · flash</a>
+    <a href="#hospital-hover">Hospital hover</a>
+    <a href="#saving">Saving micro-state</a>
+
+    <div class="sg-nav-title">Workflow Components</div>
+    <a href="#case-card">Case card</a>
+    <a href="#lane">Swim lane</a>
+    <a href="#list-view">List view row</a>
+    <a href="#view-toggle">Board ↔ List toggle</a>
+    <a href="#inbox-item">Inbox item</a>
+    <a href="#editable-drawer">Editable drawer chrome</a>
+    <a href="#timeline">Progress timeline</a>
+    <a href="#state-row">State row</a>
+    <a href="#substep">Substep</a>
+    <a href="#pp-step">PP-Step (current)</a>
+  </nav>
+
+  <!-- ===== Main content ===== -->
+  <main class="sg-main" id="top">
+    <h1 class="sg-h1">Digital Surgery Platform — Design System</h1>
+    <p class="sg-intro">A reference for every UI component and pattern in the ADS prototypes. Use this page to inspect the visual specifications, copy markup into new screens, and verify that work stays consistent with the brand tokens.</p>
+
+    <!-- ============== FOUNDATIONS ============== -->
+
+    <section class="sg-section" id="colors">
+      <h2 class="sg-h2">Colors</h2>
+      <p class="sg-desc">All colors live in <code>styles/tokens.css</code>. Use brand tokens for everything; the few raw hex values (status pills, On Hold gold, Rework orange) are intentional exceptions documented in the token file.</p>
+
+      <h3 class="sg-h3">Brand</h3>
+      <div class="sg-swatches">
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cerulean);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cerulean (hero)</div><div class="sg-swatch-token">--cerulean · #00b3ef</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #019fd4;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cerulean Hover</div><div class="sg-swatch-token">--cerulean-hover · #019fd4</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--gold-tips);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Gold Tips</div><div class="sg-swatch-token">--gold-tips · #fcb31c</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cool-gray-11);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Dark Text</div><div class="sg-swatch-token">--cool-gray-11 · #343741</div></div></div>
+      </div>
+      <div class="sg-callout" style="margin-top: 18px; padding: 12px 14px; background: color-mix(in srgb, var(--cerulean) 8%, #fff); border: 1px solid color-mix(in srgb, var(--cerulean) 30%, #fff); border-radius: var(--radius-md); font-size: 13px; color: var(--cool-gray-11);">
+        <b>Brand cerulean is reserved.</b> Use <code>--cerulean</code> only on: primary buttons, the Progress timeline current node, the State row active marker, the PP-step current circle, and checkbox / radio accent. For everything else (incidental UI, hover states, status pills), use the dedicated tokens below — <code>--cerulean-hover</code> for hover, <code>--in-process-blue</code> for the In Process status. Keeping brand cerulean scarce keeps it "special."
+      </div>
+
+      <h3 class="sg-h3">Cool gray ramp</h3>
+      <div class="sg-swatches">
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cool-gray-1);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cool Gray 1</div><div class="sg-swatch-token">--cool-gray-1</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cool-gray-3);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cool Gray 3</div><div class="sg-swatch-token">--cool-gray-3</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cool-gray-5);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cool Gray 5</div><div class="sg-swatch-token">--cool-gray-5</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cool-gray-7);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cool Gray 7</div><div class="sg-swatch-token">--cool-gray-7</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cool-gray-9);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cool Gray 9</div><div class="sg-swatch-token">--cool-gray-9</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: var(--cool-gray-11);"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cool Gray 11</div><div class="sg-swatch-token">--cool-gray-11</div></div></div>
+      </div>
+
+      <h3 class="sg-h3">Status</h3>
+      <div class="sg-swatches">
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #1f6fd0;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">In Process</div><div class="sg-swatch-token">--in-process-blue · #1f6fd0</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #5e548e;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Review</div><div class="sg-swatch-token">#5e548e</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #e88924;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Rework</div><div class="sg-swatch-token">#e88924</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #c81717;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Blocked</div><div class="sg-swatch-token">#c81717</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #debb46;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">On Hold</div><div class="sg-swatch-token">#debb46</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #1f8a4d;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Complete / Shipped / Delivered</div><div class="sg-swatch-token">--notify-green · #1f8a4d</div></div></div>
+        <div class="sg-swatch"><div class="sg-swatch-chip" style="background: #cb2457;"></div><div class="sg-swatch-meta"><div class="sg-swatch-name">Cancelled</div><div class="sg-swatch-token">#cb2457</div></div></div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="typography">
+      <h2 class="sg-h2">Typography</h2>
+      <p class="sg-desc">Proxima Nova everywhere. Sizes scale per role.</p>
+      <div class="sg-tile">
+        <div class="sg-type">
+          <div style="font-size: 32px; font-weight: 700; color: var(--cool-gray-11);">Page title H1</div>
+          <div class="sg-type-meta">32 / 700</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--cool-gray-11);">Section H2</div>
+          <div class="sg-type-meta">22 / 700</div>
+          <div style="font-size: 19px; color: var(--cool-gray-11);">Drawer head H3</div>
+          <div class="sg-type-meta">19 / 400</div>
+          <div style="font-size: 15px; font-weight: 600; color: var(--cool-gray-11);">State / Lane label</div>
+          <div class="sg-type-meta">15 / 600</div>
+          <div style="font-size: 14px; color: var(--cool-gray-11);">Body</div>
+          <div class="sg-type-meta">14 / 400</div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--cool-gray-11);">Card ID label</div>
+          <div class="sg-type-meta">13 / 600</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Meta / caption</div>
+          <div class="sg-type-meta">12 / 400</div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; color: var(--cool-gray-7);">FIELD LABEL</div>
+          <div class="sg-type-meta">11 / 700 · uppercase</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="spacing">
+      <h2 class="sg-h2">Spacing &amp; radius</h2>
+      <p class="sg-desc">Common spacing rhythms: 4 / 8 / 12 / 14 / 16 / 24 / 32 px. Card padding is typically 14–20px. Radius scale: sm 6, md 8, lg 12.</p>
+      <div class="sg-tile">
+        <div class="sg-row">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="background: var(--cerulean); height: 32px; width: 32px; border-radius: var(--radius-sm);"></div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="background: var(--cerulean); height: 32px; width: 32px; border-radius: var(--radius-md);"></div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="background: var(--cerulean); height: 32px; width: 32px; border-radius: var(--radius-lg);"></div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="background: var(--cerulean); height: 32px; width: 32px; border-radius: 999px;"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== COMPONENTS ============== -->
+
+    <section class="sg-section" id="buttons">
+      <h2 class="sg-h2">Buttons</h2>
+      <p class="sg-desc">Three button surfaces: <code>.btn</code> for form/page actions, <code>.action-btn</code> for breadcrumb-row actions next to the case ID, <code>.icon-btn</code> for topbar utilities.</p>
+
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">.btn (default)</span></div>
+        <div class="sg-row">
+          <button class="btn" type="button">Cancel</button>
+          <button class="btn btn-primary" type="button">Save Changes</button>
+          <button class="btn btn-danger" type="button">Delete file</button>
+          <button class="btn is-active" type="button">Toggled on</button>
+          <button class="btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>
+        </div>
+      </div>
+
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">.action-btn (case-detail header)</span></div>
+        <div class="sg-row">
+          <button class="action-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Comments
+          </button>
+          <button class="action-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Files
+          </button>
+          <button class="action-btn is-open" type="button">3D viewer</button>
+          <button class="action-btn icon-only" aria-label="More">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">.icon-btn (topbar)</span></div>
+        <div class="sg-row">
+          <button class="icon-btn" aria-label="Inbox">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          </button>
+          <button class="icon-btn" aria-label="Fullscreen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 8 4 4 8 4"/><polyline points="16 4 20 4 20 8"/><polyline points="20 16 20 20 16 20"/><polyline points="8 20 4 20 4 16"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="checkboxes">
+      <h2 class="sg-h2">Checkboxes</h2>
+      <p class="sg-desc">V7: every checkbox in the app uses a custom <code>appearance:none</code> treatment so the rendering is consistent across browsers and the check stays white. Locked to a true 16×16 square via <code>aspect-ratio</code>, <code>min/max-width</code>, and a flex shorthand so flex parents can't stretch the box. Containers that pair a checkbox with a text label use a 16px gap.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">States</span></div>
+        <div class="sg-row" style="gap: 28px; align-items: center;">
+          <label style="display: inline-flex; align-items: center; gap: 16px; font-size: 13px;"><input type="checkbox" /> Unchecked</label>
+          <label style="display: inline-flex; align-items: center; gap: 16px; font-size: 13px;"><input type="checkbox" checked /> Checked</label>
+          <label style="display: inline-flex; align-items: center; gap: 16px; font-size: 13px;" tabindex="0"><input type="checkbox" disabled /> Disabled</label>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Multi-select dropdown — .ms-option</span></div>
+        <p class="sg-desc">Used by the cases-filter dropdowns and the Include Disclaimers picker. 16px gap between box and label.</p>
+        <div class="ms" style="max-width: 240px; position: relative;">
+          <div class="ms-popover" style="position: static; box-shadow: none; padding: 4px;">
+            <div class="ms-options">
+              <label class="ms-option"><input type="checkbox" checked /><span>Dr. Reyes</span></label>
+              <label class="ms-option"><input type="checkbox" /><span>Dr. Yoon</span></label>
+              <label class="ms-option"><input type="checkbox" /><span>Dr. Lopez</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Rules</span></div>
+        <ul style="font-size: 13.5px; color: var(--cool-gray-10); line-height: 1.6; padding-left: 18px; margin: 0;">
+          <li><b>Shape:</b> true 16×16 square. Use <code>aspect-ratio: 1 / 1</code> + <code>min-width</code>/<code>max-width: 16px</code> + <code>flex: 0 0 16px</code> + <code>padding: 0</code> so nothing inflates the box.</li>
+          <li><b>Color:</b> white fill with a <code>--cool-gray-3</code> 1.5px border when unchecked. On <code>:checked</code>, fill flips to <code>--cerulean</code> with a white SVG check (data URI). Don't rely on <code>accent-color</code> — some browsers leave the check mark black.</li>
+          <li><b>Gap to label:</b> 16px in <code>.ms-option</code>. Keep similar breathing room in any new container (avoid &lt; 14px).</li>
+          <li><b>Read-only drawers:</b> the <code>.sp-drawer.is-readonly</code> transparency rule excludes <code>input[type="checkbox"]</code>, so checkboxes inside a read-only drawer remain visible (border + fill intact) while <code>pointer-events: none</code> blocks toggling.</li>
+          <li><b>Form-row scoping:</b> <code>.form-row input</code> styling (border, padding) only targets text-shaped inputs. Checkbox + radio inputs are excluded with <code>:not([type="checkbox"]):not([type="radio"])</code>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sg-section" id="inputs">
+      <h2 class="sg-h2">Form inputs</h2>
+      <p class="sg-desc">Every form field lives inside a <code>.form-row</code> with an uppercase label.</p>
+
+      <div class="sg-tile">
+        <div class="sg-stack">
+          <div class="form-row">
+            <label for="sgInput">Reason for change</label>
+            <input id="sgInput" type="text" placeholder="Describe the reason…" />
+          </div>
+          <div class="form-row">
+            <label for="sgSelect">Set case state</label>
+            <select id="sgSelect">
+              <option>Intake</option><option>Case Setup</option><option selected>Planning</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="sgArea">Notes <em style="color: var(--cool-gray-7); font-style: normal; font-weight: 400;">(optional)</em></label>
+            <textarea id="sgArea" placeholder="Notes for the next reviewer…"></textarea>
+          </div>
+          <div class="sg-row">
+            <label class="checkbox-row"><input type="checkbox" checked /> Anatomy boundaries verified</label>
+            <label class="checkbox-row"><input type="checkbox" /> Measurements confirmed</label>
+          </div>
+          <div class="radio-group">
+            <label class="radio"><input type="radio" name="sgr" checked /> <span>Pass</span></label>
+            <label class="radio"><input type="radio" name="sgr" /> <span>Fail</span></label>
+          </div>
+          <label class="switch"><input type="checkbox" checked /><span class="track"></span></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="dropzone">
+      <h2 class="sg-h2">Dropzone</h2>
+      <p class="sg-desc">Optional file upload zone used across active step bodies.</p>
+
+      <div class="sg-tile">
+        <span class="dz-label">Files <em>(optional)</em></span>
+        <label class="dropzone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="dz-title">Drag &amp; drop files here</div>
+          <div class="dz-sub">or <span class="dz-browse">browse</span> to upload</div>
+        </label>
+      </div>
+    </section>
+
+    <section class="sg-section" id="status-pills">
+      <h2 class="sg-h2">Status pills</h2>
+      <p class="sg-desc">Solid-fill pill, white text. Used on case cards, sticky breadcrumb, current timeline step, and active state row.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Default (large)</span></div>
+        <div class="sg-row">
+          <span class="status-pill is-in-process">In Process</span>
+          <span class="status-pill is-review">Review</span>
+          <span class="status-pill is-rework">Rework</span>
+          <span class="status-pill is-blocked">Blocked</span>
+          <span class="status-pill is-on-hold">On Hold</span>
+          <span class="status-pill is-complete">Complete</span>
+          <span class="status-pill is-shipped">Shipped</span>
+          <span class="status-pill is-delivered">Delivered</span>
+          <span class="status-pill is-cancelled">Cancelled</span>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Small (timeline + state row)</span></div>
+        <div class="sg-row">
+          <span class="status-pill sm is-in-process">In Process</span>
+          <span class="status-pill sm is-rework">Rework</span>
+          <span class="status-pill sm is-blocked">Blocked</span>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Customer-facing pills</span></div>
+        <p class="sg-desc">Customers (sales rep, surgeon, sales manager) see a trimmed status set. The <b>Blocked</b> status is relabeled <b>Action Required</b> in customer copy — same <code>.is-blocked</code> token, different label — so the wording reads as a clear CTA. Internal-process statuses (In Process / Rework / Review) are suppressed on customer pills; only the statuses a customer needs to act on are visible.</p>
+        <div class="sg-row">
+          <span class="status-pill is-on-hold">On Hold</span>
+          <span class="status-pill is-blocked">Action Required</span>
+          <span class="status-pill is-complete">Complete</span>
+          <span class="status-pill is-shipped">Shipped</span>
+          <span class="status-pill is-delivered">Delivered</span>
+          <span class="status-pill is-cancelled">Cancelled</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="avatars">
+      <h2 class="sg-h2">Avatars</h2>
+      <p class="sg-desc">Brand gold circle with black initials. Used in topbar, comments, and history entries.</p>
+      <div class="sg-tile">
+        <div class="sg-row">
+          <span class="av av-sm">JH</span>
+          <span class="av">JH</span>
+          <span class="av av-lg">JH</span>
+          <span class="av">PN</span>
+          <span class="av">DA</span>
+          <span class="av">SC</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="step-alert">
+      <h2 class="sg-h2">Step alerts</h2>
+      <p class="sg-desc">Tinted attention banner at the top of an active substep. Copy is templated per status. Hidden for In Process — no banner needed when the case is on the happy path.</p>
+      <div class="sg-tile">
+        <div class="sg-stack">
+          <div class="step-alert is-review">
+            <svg class="sa-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div><b>Attention</b> Awaiting QC review.</div>
+          </div>
+          <div class="step-alert is-rework">
+            <svg class="sa-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div><b>Attention</b> Rejected by Michael Jordan on 25APR2026 – 7702-1005R program hole size incorrect.</div>
+          </div>
+          <div class="step-alert is-on-hold">
+            <svg class="sa-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div><b>Attention</b> Case placed on hold due to {Reason from settings}.</div>
+          </div>
+          <div class="step-alert is-blocked">
+            <svg class="sa-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div><b>Attention</b> Case blocked, please provide report approval to continue.</div>
+          </div>
+          <div class="step-alert is-blocked">
+            <svg class="sa-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div><b>Attention</b> Case blocked, please provide authorization to continue with non-conforming data.</div>
+          </div>
+          <div class="step-alert is-blocked">
+            <svg class="sa-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div><b>Attention</b> Case blocked, please upload new patient data to continue.</div>
+          </div>
+          <div class="step-alert is-canceled">
+            <svg class="sa-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div><b>Attention</b> Case cancelled due to {Reason from settings}.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="inline-confirm">
+      <h2 class="sg-h2">Inline confirmation</h2>
+      <p class="sg-desc">Lightweight destructive confirmation that renders inline inside the affected card (file card / plan card / device card) instead of opening a modal. Same shape as the External-post composer-confirm but with a red (danger) accent. Cancel restores the card; Confirm runs the destructive action. Used for: <b>File delete</b>, <b>Remove plan</b>, <b>Remove device</b>.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Default (danger)</span></div>
+        <div class="inline-confirm" role="alertdialog">
+          <div class="ic-head">
+            <svg class="ic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="ic-titlewrap">
+              <div class="ic-title">Remove this device?</div>
+              <div class="ic-sub">7702-6001N will be removed from the case device list.</div>
+            </div>
+          </div>
+          <div class="ic-actions">
+            <button class="btn" type="button">Cancel</button>
+            <button class="btn btn-danger" type="button">Remove device</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="case-attention">
+      <h2 class="sg-h2">Case Attention banner (portal)</h2>
+      <p class="sg-desc">Case-level banner shown at the top of the customer case-detail body (above the progress card) when the case is in a terminal or blocked state. Uses the same tinted-callout pattern as <code>.step-alert</code> but sized for a top-of-page placement. Copy includes a reason pulled from Settings.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">On Hold</span></div>
+        <div class="case-attention is-on-hold">
+          <svg class="ca-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div><b class="ca-title">Attention</b><span>Case placed on hold — awaiting updated CT scan from the imaging center.</span></div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Cancelled</span></div>
+        <div class="case-attention is-canceled">
+          <svg class="ca-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div><b class="ca-title">Attention</b><span>Case cancelled — surgery postponed by surgeon; no further action required.</span></div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Action Required (Blocked)</span></div>
+        <div class="case-attention is-blocked">
+          <svg class="ca-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div><b class="ca-title">Attention</b><span>Case blocked — please review and approve the report to continue.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="file-card">
+      <h2 class="sg-h2">File card</h2>
+      <p class="sg-desc">Compact file representation. File cards no longer render inline inside Record substeps — each step shows a single "Open in Files Manager" link below, which deep-links to the matching folder in the Files drawer. The file card itself is still used inside the drawer.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Per-step link</span></div>
+        <button class="step-files-link" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <span>Open in Files Manager</span>
+          <span class="sfl-count">· 3 files</span>
+        </button>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Admin / Internal staff — with gear + download</span></div>
+        <div class="sg-stack">
+          <div class="file-card">
+            <div style="flex: 1;">
+              <div class="f-name">CT-scan.dcm</div>
+              <div class="f-sub">Sarah Chen · 04MAY2026 · CT upload</div>
+            </div>
+            <button class="file-act" aria-label="File settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+            <button class="file-act" aria-label="Download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+          </div>
+          <div class="file-card">
+            <div style="flex: 1;">
+              <div class="f-name">approval-sign-off.pdf</div>
+              <div class="f-sub">Dr. R. Alvarez · 18MAY2026 · Surgeon approval</div>
+            </div>
+            <button class="file-act" aria-label="File settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+            <button class="file-act" aria-label="Download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Portal / Customer — no per-file actions</span></div>
+        <p class="sg-desc">Per Phase 11: customers see file name + meta only. Download is reached by selecting the file then using the drawer-level Download action (same pattern as admin). Settings (rename / share-who / supersede) is admin-only.</p>
+        <div class="sg-stack">
+          <div class="file-card">
+            <div style="flex: 1;">
+              <div class="f-name">CT-scan.dcm</div>
+              <div class="f-sub">Sarah Chen · 04MAY2026 · CT upload</div>
+            </div>
+          </div>
+          <div class="file-card">
+            <div style="flex: 1;">
+              <div class="f-name">patient-intake-form.pdf</div>
+              <div class="f-sub">Sarah Chen · 04MAY2026 · Patient info</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="breadcrumb">
+      <h2 class="sg-h2">Breadcrumb</h2>
+      <p class="sg-desc">Top of the case-detail view; clickable parent + bold current ID + chevron separator.</p>
+      <div class="sg-tile">
+        <div class="breadcrumb">
+          <a class="crumb" href="#">My cases</a>
+          <span class="crumb-sep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="crumb current">ID: 26A0089</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="case-type">
+      <h2 class="sg-h2">Case Type icons</h2>
+      <p class="sg-desc">Identifies non-Clinical cases at a glance. Bone glyph = Cadaver case, beaker glyph = Demo case. Clinical cases get no icon. Renders next to the copy-ID / deviation icons on the case-detail breadcrumb row, and inline with the ID on case cards in the lanes view.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Cadaver</span></div>
+        <div style="display: flex; align-items: center; gap: 8px; color: var(--cool-gray-9);">
+          <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.83 10A3 3 0 1 0 5 12 A3 3 0 1 0 7.83 14 L16.17 14 A3 3 0 1 0 19 12 A3 3 0 1 0 16.17 10 Z"/></svg>
+          <span style="font-size: 13px;">Dog-bone glyph</span>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Demo</span></div>
+        <div style="display: flex; align-items: center; gap: 8px; color: var(--cool-gray-9);">
+          <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 9V3"/><path d="M14 9V3"/><path d="M10 9l-4 9a2 2 0 0 0 2 3h8a2 2 0 0 0 2-3l-4-9"/></svg>
+          <span style="font-size: 13px;">Beaker glyph</span>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Clinical</span></div>
+        <div style="font-size: 13px; color: var(--cool-gray-7);">No icon. The default state — Clinical cases stay visually quiet.</div>
+      </div>
+    </section>
+
+    <!-- ============== WORKFLOW COMPONENTS ============== -->
+
+    <section class="sg-section" id="case-card">
+      <h2 class="sg-h2">Case card</h2>
+      <p class="sg-desc">A clickable card on the swim-lane board. Status pill top-right; detail meta order: <b>Surgery Date → Surgeon → Patient → Solution</b> (V6). An "Open in new tab" affordance fades in on hover at the bottom-right.</p>
+
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">In Process</span></div>
+        <a class="case-card" href="#">
+          <div class="case-card-id"><span><b>ID:</b>26A0098</span><span class="status-pill is-in-process">In Process</span></div>
+          <div class="case-card-field"><b>Surgery Date:</b> 28JUN2026</div>
+          <div class="case-card-field"><b>Surgeon:</b> Dr. Reyes</div>
+          <div class="case-card-field"><b>Patient:</b> Emma Carter</div>
+          <div class="case-card-field"><b>Solution:</b> Maxillofacial Reconstruction Plates</div>
+        </a>
+      </div>
+
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">With deviation flag (admin only)</span></div>
+        <p class="sg-desc">Gold deviation flag next to the case ID. <b>Admin / Internal staff only</b> — customers (portal) do not see deviation icons per V5.</p>
+        <a class="case-card" href="#">
+          <div class="case-card-id"><span><b>ID:</b>26A0088<svg class="case-card-dev-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span><span class="status-pill is-in-process">In Process</span></div>
+          <div class="case-card-field"><b>Surgery Date:</b> 17JUN2026</div>
+          <div class="case-card-field"><b>Surgeon:</b> Dr. Lopez</div>
+          <div class="case-card-field"><b>Patient:</b> Olivia Hayes</div>
+          <div class="case-card-field"><b>Solution:</b> Mandibular Reconstruction</div>
+        </a>
+      </div>
+
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">With "open in new tab" icon</span></div>
+        <div class="sg-card-with-newtab" style="display: inline-block;">
+          <a class="case-card" href="#">
+            <div class="case-card-id"><span><b>ID:</b>26A0091</span><span class="status-pill is-review">Review</span></div>
+            <div class="case-card-field"><b>Surgery Date:</b> 18JUN2026</div>
+            <div class="case-card-field"><b>Surgeon:</b> Dr. Yoon</div>
+            <div class="case-card-field"><b>Patient:</b> Liam Bennett</div>
+            <div class="case-card-field"><b>Solution:</b> Orthognathic Surgery</div>
+          </a>
+          <span class="case-card-newtab" aria-label="Open in new tab" title="Open in new tab" style="opacity: 1;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="lane">
+      <h2 class="sg-h2">Swim lane</h2>
+      <p class="sg-desc">A column on the cases board. Light-tinted container with a free-floating title, status filter, count pip, and stacked cards.</p>
+      <div class="sg-tile">
+        <div class="sg-lane">
+          <div class="sg-lane-head">
+            <span class="sg-lane-name">Intake</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto;">
+              <span class="lane-sort">
+                <button class="lane-sort-btn" type="button" aria-label="Filter by status">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                </button>
+              </span>
+              <span class="sg-lane-count">2</span>
+            </span>
+          </div>
+          <a class="case-card" href="#">
+            <div class="case-card-id"><span><b>ID:</b>26A0098</span><span class="status-pill is-in-process">In Process</span></div>
+            <div class="case-card-field"><b>Surgery Date:</b> 28JUN2026</div>
+            <div class="case-card-field"><b>Surgeon:</b> Dr. Reyes</div>
+            <div class="case-card-field"><b>Patient:</b> Emma Carter</div>
+            <div class="case-card-field"><b>Solution:</b> Maxillofacial Reconstruction Plates</div>
+          </a>
+          <a class="case-card" href="#">
+            <div class="case-card-id"><span><b>ID:</b>26A0096</span><span class="status-pill is-in-process">In Process</span></div>
+            <div class="case-card-field"><b>Surgery Date:</b> 24JUN2026</div>
+            <div class="case-card-field"><b>Surgeon:</b> Dr. Park</div>
+            <div class="case-card-field"><b>Patient:</b> Noah Foster</div>
+            <div class="case-card-field"><b>Solution:</b> Diagnostic Models</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="timeline">
+      <h2 class="sg-h2">Progress timeline</h2>
+      <p class="sg-desc">Horizontal 8-step indicator at the top of the case detail. Steps: <em>done</em> (gray + check), <em>current</em> (blue + halo), <em>upcoming</em> (empty bordered circle).</p>
+      <div class="sg-tile">
+        <ol class="timeline">
+          <li class="tl-step is-done"><span class="tl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="tl-label">Intake</span></li>
+          <li class="tl-step is-done"><span class="tl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="tl-label">Case Setup</span></li>
+          <li class="tl-step is-done"><span class="tl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="tl-label">Planning</span></li>
+          <li class="tl-step is-current"><span class="tl-node"></span><span class="tl-label">Design</span></li>
+          <li class="tl-step is-upcoming"><span class="tl-node"></span><span class="tl-label">Approval</span></li>
+          <li class="tl-step is-upcoming"><span class="tl-node"></span><span class="tl-label">Production Prep</span></li>
+          <li class="tl-step is-upcoming"><span class="tl-node"></span><span class="tl-label">Production</span></li>
+          <li class="tl-step is-upcoming"><span class="tl-node"></span><span class="tl-label">Complete</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sg-section" id="state-row">
+      <h2 class="sg-h2">State row</h2>
+      <p class="sg-desc">Vertical row inside the Record section. Three states: <em>completed</em> (gray + check + meta), <em>active</em> (blue marker + halo), <em>upcoming</em> (empty bordered circle).</p>
+      <div class="sg-tile">
+        <div class="state-stack">
+          <div class="state-row is-completed is-first">
+            <div class="state-rail"><span class="marker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+            <div class="state-main">
+              <div class="state-head">
+                <span class="state-titletext">Intake</span>
+                <span class="state-when">Completed by Sarah Chen · <b>04MAY2026</b></span>
+              </div>
+            </div>
+          </div>
+          <div class="state-row is-active">
+            <div class="state-rail"><span class="marker"></span></div>
+            <div class="state-main">
+              <div class="state-head">
+                <span class="state-titletext">Case Setup</span>
+                <span class="status-pill sm is-rework">Rework</span>
+              </div>
+            </div>
+          </div>
+          <div class="state-row is-upcoming is-last">
+            <div class="state-rail"><span class="marker"></span></div>
+            <div class="state-main">
+              <div class="state-head">
+                <span class="state-titletext">Planning</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="substep">
+      <h2 class="sg-h2">Substep card</h2>
+      <p class="sg-desc">Collapsible step inside a completed state's detail. Green check + name + meta + chevron.</p>
+      <div class="sg-tile">
+        <div class="substep">
+          <div class="substep-top">
+            <span class="substep-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="substep-name">Input Review</span>
+            <span class="substep-meta">Completed by John Doe · 05MAY2026</span>
+            <svg class="substep-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Parallel branch group</span></div>
+        <p class="sg-desc" style="margin-top:0;">Used in Production Prep after Submit order. Three substeps run independently — no sequential dependency between them. The wrapper exists in the DOM for layout grouping but is visually transparent (no rail, no pill, no per-step icon). When any of the three is the case's current step, its pp-num uses a sub-letter (<code>2a</code> / <code>2b</code> / <code>2c</code>) to signal the branch relationship.</p>
+        <div class="substep-parallel-group">
+          <div class="substep">
+            <div class="substep-top">
+              <span class="substep-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="substep-name">Programming</span>
+              <span class="substep-meta">Completed by Steve Smith · 28APR2026</span>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-top">
+              <span class="substep-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="substep-name">3D File Prep</span>
+              <span class="substep-meta">Completed by Steve Smith · 02JUN2026</span>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-top">
+              <span class="substep-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="substep-name">Final report check</span>
+              <span class="substep-meta">Completed by Marcus Webb · 01JUN2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Sub-letter pp-num (current branch)</span></div>
+        <p class="sg-desc" style="margin-top:0;">When the case is actively on a parallel branch, the badge becomes <code>2a</code>/<code>2b</code>/<code>2c</code> — signalling which branch under step 2.</p>
+        <div class="pp-step">
+          <button class="pp-step-head" type="button">
+            <span class="pp-num">2a</span>
+            <span class="pp-title">Programming</span>
+            <svg class="pp-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="pp-step">
+      <h2 class="sg-h2">PP-step (current step)</h2>
+      <p class="sg-desc">Numbered step inside an active state's body — replaces the substep look once a step is the one being worked on. Shows a blue number badge instead of a check.</p>
+      <div class="sg-tile">
+        <div class="pp-step">
+          <button class="pp-step-head" type="button">
+            <span class="pp-num">4</span>
+            <span class="pp-title">Quality Check</span>
+            <svg class="pp-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="unread-indicators">
+      <h2 class="sg-h2">Unread indicators</h2>
+      <p class="sg-desc">Small red dot signalling unread activity. No counter — internal/external comment splits make a number ambiguous.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Inbox bell — topbar</span></div>
+        <button class="icon-btn has-unread" type="button" aria-label="Inbox">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+        </button>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Comments action button</span></div>
+        <button class="action-btn has-unread" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Comments
+        </button>
+      </div>
+    </section>
+
+    <section class="sg-section" id="lane-filter">
+      <h2 class="sg-h2">Lane status filter</h2>
+      <p class="sg-desc">Multi-select filter. Attached to every swim-lane head and to every list-view section head. Clicking a status chip toggles it on/off; the lane shows the union of every active chip. Clicking "All" clears the set and restores every card. With no chips active, "All" is implicitly active. Empty statuses are dimmed but still selectable. Menu stays open while selecting — outside click or Esc closes.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Open — nothing selected (= All)</span></div>
+        <div class="lane-sort open" style="vertical-align: top;">
+          <button class="lane-sort-btn" type="button" aria-label="Filter by status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          </button>
+          <div class="lane-sort-menu" role="menu" style="display: block; position: relative; margin-top: 8px;">
+            <button class="lane-sort-item is-active" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>All</button>
+            <button class="lane-sort-item" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>In Process</button>
+            <button class="lane-sort-item" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Review</button>
+            <button class="lane-sort-item" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Rework</button>
+            <button class="lane-sort-item is-empty" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Blocked</button>
+            <button class="lane-sort-item is-empty" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>On Hold</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Open — multiple chips active</span></div>
+        <div class="lane-sort open" style="vertical-align: top;">
+          <button class="lane-sort-btn" type="button" aria-label="Filter by status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          </button>
+          <div class="lane-sort-menu" role="menu" style="display: block; position: relative; margin-top: 8px;">
+            <button class="lane-sort-item" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>All</button>
+            <button class="lane-sort-item is-active" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>In Process</button>
+            <button class="lane-sort-item" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Review</button>
+            <button class="lane-sort-item is-active" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Rework</button>
+            <button class="lane-sort-item is-empty" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Blocked</button>
+            <button class="lane-sort-item is-empty" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>On Hold</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Complete lane — counts per status (V6)</span></div>
+        <p class="sg-desc">V6 adds a count pill on the Complete state filter showing how many cases sit at each terminal status. Empty statuses dim and hide the pill.</p>
+        <div class="lane-sort open" style="vertical-align: top;">
+          <button class="lane-sort-btn" type="button" aria-label="Filter by status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          </button>
+          <div class="lane-sort-menu" role="menu" style="display: block; position: relative; margin-top: 8px;">
+            <button class="lane-sort-item is-active" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>All<span class="lane-sort-item-count">4</span></button>
+            <button class="lane-sort-item" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Complete<span class="lane-sort-item-count">1</span></button>
+            <button class="lane-sort-item" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Shipped<span class="lane-sort-item-count">1</span></button>
+            <button class="lane-sort-item" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Delivered<span class="lane-sort-item-count">1</span></button>
+            <button class="lane-sort-item" type="button"><svg class="lane-sort-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Cancelled<span class="lane-sort-item-count">1</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="qc-buttons">
+      <h2 class="sg-h2">QC Pass / Fail</h2>
+      <p class="sg-desc">Two-button pattern on every Quality Check step. Default: <b>Fail</b> (secondary, left) + <b>Pass</b> (primary, right). Clicking Fail reveals a "Return case to" + "Reason" sub-form and swaps the actions to <b>Back</b> + <b>Submit</b> (danger). Back returns to the default view; Submit commits the rejection.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Default state</span></div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn" type="button">Fail</button>
+          <button class="btn btn-primary" type="button">Pass</button>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Fail mode (rejection being composed)</span></div>
+        <p class="sg-desc">V6: <b>Submit stays blue (primary)</b>, not red. Clicking it triggers the same step-advance confirm modal as Pass — the destructive-looking red treatment was misleading since Fail is still a normal QC workflow outcome, not a delete.</p>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn" type="button">Back</button>
+          <button class="btn btn-primary" type="button">Submit</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="confirm-modal">
+      <h2 class="sg-h2">Confirm modal</h2>
+      <p class="sg-desc">Branded confirmation dialog. Replaces native <code>window.confirm</code> for destructive actions (file delete) and important transitions (move-to-next, surgeon reject). Call <code>showConfirm({title, body, confirmLabel, confirmVariant, onConfirm})</code> — variant defaults to <code>danger</code> (red Delete-style button), pass <code>primary</code> for non-destructive advances.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Destructive (default)</span></div>
+        <div class="modal" style="max-width: 440px;">
+          <div class="modal-head">
+            <div>
+              <h3>Delete "CT-scan.dcm"?</h3>
+              <p>This can't be undone.</p>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn" type="button">Cancel</button>
+            <button class="btn btn-danger" type="button">Delete file</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Advance (primary)</span></div>
+        <div class="modal" style="max-width: 440px;">
+          <div class="modal-head">
+            <div>
+              <h3>Advance from Production Prep?</h3>
+              <p>Saving will mark Production Prep complete and move this case into Production.</p>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn" type="button">Cancel</button>
+            <button class="btn btn-primary" type="button">Save &amp; advance</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="input-review-card">
+      <h2 class="sg-h2">Input Review: Additional Details</h2>
+      <p class="sg-desc">The DICOM + Dental data validation card lives inside the Input Review substep when Case Setup is the active state. Yes/No fields are radio groups; Customer authorization is a 3-radio set (Yes / No / Pending). Expiration auto-fills from Acquisition Date — <code>+3 months</code> for CT, <code>+2.5 months</code> for CBCT (rendered as plain DDMMMYYYY). Conditional rows use <code>data-show-when="key=value[,key=value]"</code>. Authorization = pending or no → case status flips to <b>Blocked</b>.</p>
+      <div class="sg-tile">
+        <div class="ir-card">
+          <div class="ir-card-head">Input Review: Additional Details</div>
+          <div class="ir-card-body">
+            <div class="ir-section">
+              <div class="ir-section-title">DICOM Validation</div>
+              <div class="ir-grid">
+                <div class="form-row">
+                  <label>DICOM Type:</label>
+                  <select><option>CT</option><option selected>CBCT</option></select>
+                </div>
+                <div class="form-row">
+                  <label>Acquisition Date:</label>
+                  <input type="date" value="2026-04-28" />
+                </div>
+                <div class="form-row">
+                  <label>Expiration Date:</label>
+                  <div class="ir-readonly">24JUL2026</div>
+                </div>
+              </div>
+              <div class="ir-grid">
+                <div class="form-row">
+                  <label>DICOM Conforms:</label>
+                  <div class="radio-row-group">
+                    <label class="radio-row"><input type="radio" name="sgDicomConforms" checked /><span>Yes</span></label>
+                    <label class="radio-row"><input type="radio" name="sgDicomConforms" /><span>No</span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ir-section">
+              <div class="ir-section-title">Dental Data Validation</div>
+              <div class="ir-grid">
+                <div class="form-row">
+                  <label>Dental Data Required:</label>
+                  <div class="radio-row-group">
+                    <label class="radio-row"><input type="radio" name="sgDentalReq" checked /><span>Yes</span></label>
+                    <label class="radio-row"><input type="radio" name="sgDentalReq" /><span>No</span></label>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <label>Data Type:</label>
+                  <select><option>I/O Scan</option><option>3D print</option><option>Stone model</option></select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ir-card-foot">
+            <button class="btn" type="button">Cancel</button>
+            <button class="btn btn-primary" type="button">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="input-review-readonly">
+      <h2 class="sg-h2">Input Review — read-only snapshot</h2>
+      <p class="sg-desc">After Case Setup is complete, the historical Input Review substep shows a read-only key/value summary of the form above. The form itself doesn't appear — same shape regardless of which state the user is viewing from.</p>
+      <div class="sg-tile">
+        <div class="ir-readonly-group" style="max-width: 540px;">
+          <div class="ir-readonly-section-title">DICOM Validation</div>
+          <div class="ss-field"><span class="ss-k">DICOM Type:</span> <span class="ss-v">CBCT</span></div>
+          <div class="ss-field"><span class="ss-k">Acquisition Date:</span> <span class="ss-v">28APR2026</span></div>
+          <div class="ss-field"><span class="ss-k">Expiration Date:</span> <span class="ss-v">24JUL2026</span></div>
+          <div class="ss-field"><span class="ss-k">DICOM Conforms:</span> <span class="ss-v">Yes</span></div>
+          <div class="ir-readonly-section-title">Dental Data Validation</div>
+          <div class="ss-field"><span class="ss-k">Dental Data Required:</span> <span class="ss-v">Yes</span></div>
+          <div class="ss-field"><span class="ss-k">Data Type:</span> <span class="ss-v">I/O Scan</span></div>
+          <div class="ss-field"><span class="ss-k">Data Conforms:</span> <span class="ss-v">Yes</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="surgeon-approval">
+      <h2 class="sg-h2">Surgeon Approval — V6 rebuild</h2>
+      <p class="sg-desc">V6 Phase 28: rebuilt as a binary decision with gated affordances. Default shows just <b>Reject</b> + <b>Approve</b>. Approve reveals the record file + approval date — the <em>Advance to Production Prep</em> button stays disabled until both are filled. Reject mirrors the QC reject flow: pick a return-to step + reason, Submit fires the standard confirm modal.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Default actions</span></div>
+        <div class="sa-row">
+          <button class="btn" type="button">Reject</button>
+          <button class="btn btn-primary" type="button">Approve</button>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Approve panel — gated fields</span></div>
+        <p class="sg-desc">Revealed when the user clicks <b>Approve</b>. Both fields are required; the Advance button stays disabled (cool-gray) until file + date are filled.</p>
+        <div class="surgeon-approve-panel">
+          <div class="form-2col">
+            <div class="form-row">
+              <label>Approval record file*</label>
+              <select><option value="">— Choose a file —</option><option>approval-sign-off-v2.pdf</option></select>
+            </div>
+            <div class="form-row">
+              <label>Approval date*</label>
+              <input type="date" />
+            </div>
+          </div>
+          <div class="sa-row" style="margin-top: 12px;">
+            <button class="btn" type="button">Back</button>
+            <button class="btn btn-primary is-disabled" type="button" aria-disabled="true">Advance to Production Prep</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Reject panel — QC-style return-to-step</span></div>
+        <p class="sg-desc">V6: mirrors the QC reject flow. Pick a return-to step, document the reason, Submit fires the standard step-advance confirm dialog (Cancel / Submit copy).</p>
+        <div class="surgeon-reject-panel">
+          <div class="form-row">
+            <label>Return case to</label>
+            <select><option>Design — Request approval</option><option selected>Design — Surgeon Approval</option><option>Design — Report</option><option>Planning</option></select>
+          </div>
+          <div class="form-row" style="margin-top:12px;">
+            <label>Reason for rejection</label>
+            <textarea placeholder="Document the reason…" style="width:100%; border:1px solid var(--cool-gray-2); border-radius:var(--radius-sm); padding:6px 8px; font:inherit; font-size:13px; min-height:48px;"></textarea>
+          </div>
+          <div class="sa-row" style="margin-top: 12px;">
+            <button class="btn" type="button">Back</button>
+            <button class="btn btn-primary" type="button">Submit</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="inline-file-link">
+      <h2 class="sg-h2">Inline file link · Files-folder flash</h2>
+      <p class="sg-desc">Two small affordances tied to the per-step "Open in Files Manager" pattern. <code>.ss-file-link</code> is the inline cerulean link inside an ss-field row (used in Request approval to surface "File sent: <i>approval-request-v2.pdf</i>"). Clicking either opens the Files drawer; the matching folder briefly flashes with <code>.is-flash</code> to confirm where the user landed.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Inline file link</span></div>
+        <div class="ss-field"><span class="ss-k">File sent:</span> <span class="ss-v"><a class="ss-file-link" href="#">approval-request-v2.pdf</a></span></div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Folder flash highlight</span></div>
+        <p class="sg-desc" style="margin-top:0; font-size:12.5px;">Cerulean tint that fades over ~1.4s when the user opens the drawer from a deep link.</p>
+        <div class="ff-flash-demo">
+          <b>Case Setup</b> · 6 files
+          <div style="font-size:12px; color: var(--text-muted); margin-top:4px;">input-review.pdf · segmentation.stl · preparation-notes.pdf · …</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="hospital-hover">
+      <h2 class="sg-h2">Hospital hover tooltip</h2>
+      <p class="sg-desc">Hover the Hospital field's value to reveal a dark tooltip with city / state / country. Synced from <code>data-city</code> / <code>data-state</code> / <code>data-country</code> on the picked <code>&lt;option&gt;</code> after Save.</p>
+      <div class="sg-tile">
+        <div style="padding: 40px 24px;">
+          <span class="hospital-wrap">
+            <span class="hospital-name" style="font-size:13.5px;">Mercy Surgical Center</span>
+            <span class="hospital-popover" role="tooltip">
+              <span class="hospital-row">Portland, OR</span>
+              <span class="hospital-row">USA</span>
+            </span>
+          </span>
+          <span style="font-size: 12px; color: var(--cool-gray-7); margin-left: 14px;">↑ hover the underlined name</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="saving">
+      <h2 class="sg-h2">Saving micro-state</h2>
+      <p class="sg-desc">Action buttons that trigger a non-instant operation (file save, multi-file download/zip) morph to "Saving…" with an inline spinner, then snap back when done.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Idle → Saving</span></div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button class="btn btn-primary" type="button">Save</button>
+          <button class="btn btn-primary" type="button" disabled style="display: inline-flex; gap: 6px;"><span class="btn-spinner" aria-hidden="true"></span>Saving…</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="list-view">
+      <h2 class="sg-h2">List view row</h2>
+      <p class="sg-desc">Plane-style alternate to the swim-lane board. One collapsible section per workflow state; rows show <b>ID · Surgery Date · Surgeon · Solution · Status · Open-in-new-tab</b>. Section heads carry the same status filter as swim lanes. Hover tint is 3% cerulean.</p>
+      <div class="sg-tile">
+        <div class="cases-list">
+          <div class="cases-list-section">
+            <div class="cases-list-section-head">
+              <span class="cl-section-name">Case Setup</span>
+              <span class="cl-section-count">2</span>
+              <span class="cl-spacer"></span>
+              <span class="lane-sort">
+                <button class="lane-sort-btn" type="button" aria-label="Filter by status">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                </button>
+              </span>
+              <svg class="cl-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+            </div>
+            <div class="cl-rows">
+              <a class="cl-row" href="#">
+                <span class="cl-id">26A0091</span>
+                <span class="cl-date">18JUN2026</span>
+                <span class="cl-surgeon">Dr. Yoon</span>
+                <span class="cl-solution">Orthognathic Surgery</span>
+                <span class="cl-status"><span class="status-pill is-review">Review</span></span>
+                <span class="cl-newtab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+              </a>
+              <a class="cl-row" href="#">
+                <span class="cl-id">26A0093</span>
+                <span class="cl-date">19JUN2026</span>
+                <span class="cl-surgeon">Dr. Reyes</span>
+                <span class="cl-solution">Maxillofacial Reconstruction Plates</span>
+                <span class="cl-status"><span class="status-pill is-rework">Rework</span></span>
+                <span class="cl-newtab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="view-toggle">
+      <h2 class="sg-h2">Board ↔ List toggle</h2>
+      <p class="sg-desc">Segmented control in the cases toolbar. Choice persists per user via localStorage.</p>
+      <div class="sg-tile">
+        <div class="view-toggle">
+          <button class="view-toggle-btn is-active" type="button" aria-label="Board view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="10" rx="1"/><rect x="17" y="4" width="4" height="14" rx="1"/></svg>
+          </button>
+          <button class="view-toggle-btn" type="button" aria-label="List view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="inbox-item">
+      <h2 class="sg-h2">Inbox item</h2>
+      <p class="sg-desc">Case-level row inside the global inbox drawer (topbar bell). Aggregates per-case activity — clicking opens the case and its Comments drawer. Unread shows a red dot. When the current user was @-tagged in a thread, a solid cerulean <code>@ MENTIONED</code> pill appears next to the case ID. The channel (INTERNAL / EXTERNAL) reads as inline gray uppercase text before the activity description.</p>
+      <div class="sg-tile">
+        <div class="inbox-list">
+          <a class="inbox-item is-unread" href="#">
+            <span class="inbox-dot" aria-hidden="true"></span>
+            <div class="inbox-body">
+              <div class="inbox-row">
+                <span class="inbox-title"><b>ID:</b> 26A0091<span class="inbox-mention">Mentioned</span></span>
+                <span class="inbox-when">2h ago</span>
+              </div>
+              <div class="inbox-sub"><span class="inbox-channel">Internal</span>6 unread comments · Marcus Webb, Sarah Chen, +2 more</div>
+            </div>
+          </a>
+          <a class="inbox-item is-unread" href="#">
+            <span class="inbox-dot" aria-hidden="true"></span>
+            <div class="inbox-body">
+              <div class="inbox-row">
+                <span class="inbox-title"><b>ID:</b> 26A0077</span>
+                <span class="inbox-when">Yesterday</span>
+              </div>
+              <div class="inbox-sub"><span class="inbox-channel">External</span>2 unread comments · Dr. R. Alvarez</div>
+            </div>
+          </a>
+          <a class="inbox-item" href="#">
+            <span class="inbox-dot" aria-hidden="true"></span>
+            <div class="inbox-body">
+              <div class="inbox-row">
+                <span class="inbox-title"><b>ID:</b> 26A0058</span>
+                <span class="inbox-when">Last week</span>
+              </div>
+              <div class="inbox-sub">Surgery date passed — case auto-completed</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="multi-select">
+      <h2 class="sg-h2">Multi-select filter</h2>
+      <p class="sg-desc">Drives every dropdown in the cases filter panel. Trigger shows up to 2 chips inline, then a <code>+N</code> overflow indicator. Popover has a search field and checkbox list. Selected chips have an inline <code>×</code> remove button.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Open state with two chips selected</span></div>
+        <div class="ms open">
+          <button class="ms-trigger" type="button">
+            <span class="ms-display">
+              <span class="ms-chip">Dr. Reyes<button class="ms-chip-x" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>
+              <span class="ms-chip">Dr. Yoon<button class="ms-chip-x" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>
+              <span class="ms-more">+1</span>
+            </span>
+            <svg class="ms-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="ms-popover">
+            <div class="ms-search-row"><input class="ms-search" type="text" placeholder="Search…" /></div>
+            <div class="ms-options">
+              <label class="ms-option"><input type="checkbox" checked /> Dr. Reyes</label>
+              <label class="ms-option"><input type="checkbox" checked /> Dr. Yoon</label>
+              <label class="ms-option"><input type="checkbox" checked /> Dr. Lopez</label>
+              <label class="ms-option"><input type="checkbox" /> Dr. Chen</label>
+              <label class="ms-option"><input type="checkbox" /> Dr. Patel</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="date-range">
+      <h2 class="sg-h2">Date single / range</h2>
+      <p class="sg-desc">Inline segmented control + date input(s). Single mode shows one picker; range shows two with a "to" separator. Surgery Date in the cases filter panel uses this pattern.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Single mode</span></div>
+        <div class="date-range">
+          <div class="dr-tabs">
+            <button class="dr-tab is-active" type="button">Single</button>
+            <button class="dr-tab" type="button">Range</button>
+          </div>
+          <div class="dr-pane"><input type="date" value="2026-06-18" /></div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Range mode</span></div>
+        <div class="date-range">
+          <div class="dr-tabs">
+            <button class="dr-tab" type="button">Single</button>
+            <button class="dr-tab is-active" type="button">Range</button>
+          </div>
+          <div class="dr-pane"><input type="date" value="2026-06-01" /><span class="dr-sep">to</span><input type="date" value="2026-06-30" /></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="deviation-popover">
+      <h2 class="sg-h2">Deviation popover <span style="font-size: 13px; font-weight: 500; color: var(--cool-gray-9);">— admin only</span></h2>
+      <p class="sg-desc">Branch-icon button in the case-detail breadcrumb that opens a popover listing every deviation number on the case. Each row shows the deviation # bold + a short description (V6: "splint width", "anodization color", etc. — sourced from the Deviation settings). Click copies the number to clipboard; the description is for context only. <b>Admin / Internal staff only</b> — the deviation button is permanently hidden in portal.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Open</span></div>
+        <div class="deviation-wrap open">
+          <button class="deviation-flag" type="button" aria-haspopup="menu" aria-expanded="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+          </button>
+          <div class="dev-popover" role="menu" style="top: calc(100% + 6px);">
+            <div class="dev-popover-title">Deviation numbers</div>
+            <div class="dev-popover-list">
+              <button class="dev-popover-item" type="button"><span class="dp-textwrap"><span class="dp-num">D-1234</span><span class="dp-desc">Splint width</span></span><span class="dp-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span></button>
+              <button class="dev-popover-item" type="button"><span class="dp-textwrap"><span class="dp-num">D-1287</span><span class="dp-desc">Anodization color</span></span><span class="dp-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="comments-tabs">
+      <h2 class="sg-h2">Comments thread tabs</h2>
+      <p class="sg-desc">Thread toggle in the Comments drawer. Admin sees three threads — <b>Internal</b> (internal team only, lock icon), <b>Sales</b> (Internal + Sales, surgeon excluded), and <b>External</b> (Internal + Sales + Surgeon, globe icon). Customers see two of these: rep / manager get Sales + External; surgeon gets External only. Red unread dot anchors to the icon's top-right and changes border color to match the active state's pill background.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Admin — 3 threads, Internal active</span></div>
+        <div class="comments-toggle">
+          <button class="ct-btn is-active has-unread" type="button"><span class="ct-icon-wrap"><svg class="ct-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Internal</button>
+          <button class="ct-btn" type="button"><span class="ct-icon-wrap"><svg class="ct-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>Sales</button>
+          <button class="ct-btn has-unread" type="button"><span class="ct-icon-wrap"><svg class="ct-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></svg></span>External</button>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Customer (rep / manager) — Sales + External</span></div>
+        <div class="comments-toggle">
+          <button class="ct-btn is-active" type="button"><span class="ct-icon-wrap"><svg class="ct-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>Sales</button>
+          <button class="ct-btn" type="button"><span class="ct-icon-wrap"><svg class="ct-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></svg></span>External</button>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Customer (surgeon) — External only</span></div>
+        <div class="comments-toggle">
+          <button class="ct-btn is-active" type="button"><span class="ct-icon-wrap"><svg class="ct-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></svg></span>External</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="external-confirm">
+      <h2 class="sg-h2">Post-to-thread confirm</h2>
+      <p class="sg-desc">Inline alertdialog above the Comments composer. V6 Phase 27 — triggered when the user posts to <b>any non-internal thread</b> (External or Sales). Title + sub are swapped per active channel; the rest of the chrome stays identical. Preview + Cancel / Post Comment. Lives inside the drawer to avoid modal-vs-drawer z-index fight.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">External thread</span></div>
+        <div class="composer-confirm" role="alertdialog">
+          <div class="cc-head">
+            <svg class="cc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="cc-titlewrap">
+              <div class="cc-title">Post to External thread?</div>
+              <div class="cc-sub">Visible to everyone with case access — surgeon and sales team included.</div>
+            </div>
+          </div>
+          <div class="cc-preview">Quick heads up: case is approved, expect shipment Thursday.</div>
+          <div class="cc-actions">
+            <button class="btn" type="button">Cancel</button>
+            <button class="btn btn-primary" type="button">Post comment</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Sales thread (V6)</span></div>
+        <p class="sg-desc">Same banner chrome, Sales-thread copy. In the portal, the Sales tab is labeled with the <b>company brand name</b> and a bone glyph for rep/manager users — the confirm copy matches that audience framing.</p>
+        <div class="composer-confirm" role="alertdialog">
+          <div class="cc-head">
+            <svg class="cc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="cc-titlewrap">
+              <div class="cc-title">Post to Sales thread?</div>
+              <div class="cc-sub">Visible to Internal staff and the sales team (rep + manager). Not visible to the surgeon.</div>
+            </div>
+          </div>
+          <div class="cc-preview">Shipping snag on Thursday — pinging the rep before notifying surgeon.</div>
+          <div class="cc-actions">
+            <button class="btn" type="button">Cancel</button>
+            <button class="btn btn-primary" type="button">Post comment</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Portal — company-branded thread tab (V6, rep/manager)</span></div>
+        <p class="sg-desc">V6 Phase 27 — in the portal, the Sales tab is renamed to the <b>company brand name</b> with a bone glyph for sales rep + sales manager users. Surgeon-role users don't see this tab. Admin (prototype) keeps the tab labeled <b>Sales</b>.</p>
+        <div class="comments-toggle" style="max-width: 320px;">
+          <button class="ct-btn is-active" type="button">
+            <span class="ct-icon-wrap">
+              <svg class="ct-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z"/></svg>
+            </span>
+            Company
+          </button>
+          <button class="ct-btn" type="button">
+            <span class="ct-icon-wrap">
+              <svg class="ct-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></svg>
+            </span>
+            External
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="upload-progress">
+      <h2 class="sg-h2">Upload progress</h2>
+      <p class="sg-desc">Reveals on Upload click inside the Files drawer's Upload-file panel. Shows file name + percent + cerulean fill bar that animates 0→100%. Bar turns green-tinted on completion before the panel collapses.</p>
+      <div class="sg-tile">
+        <div class="upload-progress">
+          <div class="upload-progress-row">
+            <span class="btn-spinner" aria-hidden="true"></span>
+            <span class="upload-progress-name">Uploading surgical-plan-v3.pdf…</span>
+            <span class="upload-progress-pct">62%</span>
+          </div>
+          <div class="upload-progress-bar"><div class="upload-progress-fill" style="width: 62%;"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sg-section" id="editable-drawer">
+      <h2 class="sg-h2">Editable drawer chrome</h2>
+      <p class="sg-desc">Shared <code>.sp-drawer</code> pattern. <b>Surgical Plan</b> is permanently <code>.is-readonly</code> for all roles (V6) — edits go through Comments, so it never shows Edit / Save / Cancel. <b>Device Design</b> and <b>Order &amp; Fulfillment</b> still show the Edit / Save / Cancel chrome for admin (read-only for portal). Save / Cancel are revealed in place of Edit while a drawer is in edit mode.</p>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Read-only header — Device Design / Order &amp; Fulfillment (admin)</span></div>
+        <p class="sg-desc">Default state on the editable drawers. Edit button visible for admin; portal hides it.</p>
+        <div class="sp-head">
+          <div class="sp-head-text">
+            <div class="sp-head-mode-label">Read-only view</div>
+            <div class="sp-head-mode-sub">Internal staff can edit. Other roles see this as finalized.</div>
+          </div>
+          <div class="sp-head-actions">
+            <button class="btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Edit</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Edit mode header — Device Design / Order &amp; Fulfillment</span></div>
+        <div class="sp-head">
+          <div class="sp-head-text">
+            <div class="sp-head-mode-label">Read-only view</div>
+            <div class="sp-head-mode-sub">Internal staff can edit. Other roles see this as finalized.</div>
+          </div>
+          <div class="sp-head-actions">
+            <button class="btn" type="button">Cancel</button>
+            <button class="btn btn-primary" type="button">Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Surgical Plan header (V6 — read-only, no Edit)</span></div>
+        <p class="sg-desc">Surgical Plan never shows the Edit chrome. Sub-header points users at Comments for change requests.</p>
+        <div class="sp-head">
+          <div class="sp-head-text">
+            <div class="sp-head-mode-label">Finalized plan</div>
+            <div class="sp-head-mode-sub">Use Comments to request changes to the surgical plan.</div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Meeting info card (V6)</span></div>
+        <p class="sg-desc">V6 collapses the previous Proposed + Scheduled cards into a <b>single</b> meeting card with a <b>Status</b> dropdown (Proposed / Scheduled). Date + Time share row 2; Time zone takes its own row so long IANA names fit. Meeting link row shows the URL with copy + open-in-new-tab affordances.</p>
+        <div class="sp-meeting" style="max-width: 480px;">
+          <div class="form-row" style="margin-bottom: 12px;">
+            <label>Status</label>
+            <select><option>Proposed</option><option selected>Scheduled</option></select>
+          </div>
+          <div class="form-2col">
+            <div class="form-row"><label>Date</label><input type="date" value="2026-06-13" /></div>
+            <div class="form-row"><label>Time</label><input type="time" value="15:30" /></div>
+          </div>
+          <div class="form-row" style="margin-top: 10px;"><label>Time zone</label>
+            <select><option>America/Los_Angeles (PT)</option><option selected>America/New_York (ET)</option><option>America/Chicago (CT)</option><option>UTC</option></select>
+          </div>
+          <div class="form-row" style="margin-top: 10px;">
+            <label>Meeting link</label>
+            <div class="sp-link-wrap">
+              <input type="url" value="https://meet.example.com/case-26a0088" />
+              <button class="sp-link-act" type="button" aria-label="Open meeting link in new tab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </button>
+              <button class="sp-link-act" type="button" aria-label="Copy meeting link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Surgical Plan card (V6 — collapsible)</span></div>
+        <p class="sg-desc">Plan cards are <b>read-only</b> with a <b>clickable header</b> that toggles the body. Collapsed = title + procedure summary only. Solution Set dropdown is gone (case-level data, lives in case details). No per-plan remove, no "+ New plan" — V6 dropped all SP edit affordances.</p>
+        <div class="sp-plan-card" style="background: #fff;">
+          <button class="sp-plan-head" type="button" aria-expanded="true">
+            <svg class="sp-plan-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="pp-title sp-plan-title">Surgical Plan 1</span>
+          </button>
+          <div class="sp-plan-body">
+            <div class="form-row sp-plan-summary">
+              <label>Surgical procedure</label>
+              <div style="font-size: 13px; color: var(--cool-gray-11);">1-piece Le Fort I, Bilateral Sagittal Splits, Reduction Genioplasty</div>
+            </div>
+            <div class="form-row"><label>Procedure</label><div style="font-size: 13px; color: var(--cool-gray-11);">Double Jaw Surgery</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Surgical Plan card — collapsed</span></div>
+        <p class="sg-desc">Same card with <code>.is-collapsed</code> applied. Body collapses to the procedure summary only; chevron rotates 90°.</p>
+        <div class="sp-plan-card is-collapsed" style="background: #fff;">
+          <button class="sp-plan-head" type="button" aria-expanded="false">
+            <svg class="sp-plan-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="pp-title sp-plan-title">Surgical Plan 2</span>
+          </button>
+          <div class="sp-plan-body">
+            <div class="form-row sp-plan-summary">
+              <label>Surgical procedure</label>
+              <div style="font-size: 13px; color: var(--cool-gray-11);">Alternative: Single Jaw Maxilla + Genioplasty</div>
+            </div>
+            <div class="form-row"><label>Procedure</label><div style="font-size: 13px; color: var(--cool-gray-11);">Single Jaw Surgery</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Genio Surgery sub-card</span></div>
+        <p class="sg-desc">Sibling of <code>Maxilla Surgery</code> / <code>Mandible Surgery</code>. Appears when Procedure = Genio Only OR Genio = Yes (single/double jaw).</p>
+        <div class="sp-sub-card">
+          <div class="sp-sub-card-h">Genio Surgery</div>
+          <div class="form-row"><label>Type</label><select><option>Genioplasty</option><option>Genioglossus</option></select></div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Device Design — Case Report section (V6)</span></div>
+        <p class="sg-desc">V6 (Phase 25): the Case Report block moved out of Surgical Plan and into Device Design as a single collapsible <code>.dd-report</code> section at the bottom of the drawer. Ordered: <b>CR Correction → Include Disclaimers → Preferences → Additional case notes</b>. Sub-fields use the same widgets as before — radio group, multi-select dropdown (Other reveals an inline text field), textareas.</p>
+        <section class="dd-report" style="max-width: 480px;">
+          <button class="dd-report-head" type="button" aria-expanded="true">
+            <svg class="dd-report-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="dd-report-title">Case Report</span>
+          </button>
+          <div class="dd-report-body">
+            <div class="form-row">
+              <label>CR Correction</label>
+              <div class="radio-group">
+                <label class="radio"><input type="radio" name="sgDdCR" value="in" /><span>In CR</span></label>
+                <label class="radio"><input type="radio" name="sgDdCR" value="corrected" checked /><span>Corrected CR</span></label>
+                <label class="radio"><input type="radio" name="sgDdCR" value="out" /><span>Out of CR</span></label>
+              </div>
+            </div>
+            <div class="form-row" style="margin-top: 14px;">
+              <label>Include Disclaimers</label>
+              <div class="ms ms-disclaimers">
+                <button class="ms-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="ms-display">
+                    <span class="ms-chip">CT Scan date warning</span>
+                    <span class="ms-chip">Motion artifact warning</span>
+                  </span>
+                  <svg class="ms-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-row" style="margin-top: 14px;">
+              <label>Preferences</label>
+              <textarea placeholder="Preferred sections, screenshots, measurement breakdowns…"></textarea>
+            </div>
+            <div class="form-row" style="margin-top: 14px;">
+              <label>Additional case notes</label>
+              <textarea placeholder="Anything else worth noting"></textarea>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Device Design card (collapsed)</span></div>
+        <p class="sg-desc">Each device card has a collapse chevron in the head. Collapsed cards show only the part number + description so the drawer can hold more devices at a glance. Reference case + Other are full-width rows below the 2-col field grid; both are optional and hide in read-only when blank. Other is a textarea clamped to 3 lines with a "Show more" toggle when content overflows. Total device count sits above the list.</p>
+        <div class="dd-count">2 devices</div>
+        <div class="dd-card is-collapsed" style="max-width: 480px;">
+          <div class="dd-card-head">
+            <span class="dd-card-num">1</span>
+            <div class="dd-card-part">7702-6001N<span class="dd-card-desc">Splint, traditional family</span></div>
+            <button class="dd-card-collapse" type="button" aria-label="Expand device details"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <button class="dd-card-remove" type="button" aria-label="Remove device"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+          </div>
+        </div>
+        <button class="btn btn-primary panel-export" type="button" style="margin-top: 14px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export as text
+        </button>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Order & Fulfillment — Invoiced item head</span></div>
+        <p class="sg-desc">Each Invoiced Item group now has its own top-level part number + qty. This is the billable line. Below it, product rows define which individual PNs ship in which shipment. Invoice contents (read-only) shows only the invoiced-item line; the Shipment summary still breaks down by product PN. Product column is widest; QTY + Shipment ride along the right.</p>
+        <div class="of-group" style="max-width: 480px;">
+          <div class="of-group-head">
+            <div class="of-group-title">Invoiced Item 1</div>
+          </div>
+          <div class="of-group-body">
+            <div class="of-iv-head">
+              <label>Invoiced item</label>
+              <label>QTY</label>
+              <span></span>
+              <select><option>7703-9001N — PTS RECON DSP</option></select>
+              <input type="number" value="1" min="1" />
+              <span></span>
+            </div>
+            <div class="of-prow-heads"><span>Product</span><span>QTY</span><span>Shipment</span><span></span></div>
+            <div class="of-prow"><select><option>7702-6001N — Splint, traditional family</option></select><input type="number" value="1" min="1" /><select><option>Shipment 1</option></select><span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Product picker — DD-scoped (V6)</span></div>
+        <p class="sg-desc">V6 (Phase 26): the Product dropdown is scoped to parts added in the <b>Device Design</b> drawer — no separate catalog. Each DD card is one selectable line. If the same PN appears multiple times in DD, suffix each entry with <code>(1)</code> <code>(2)</code> <code>(3)</code> so they're distinguishable. Once a line is assigned to a product row, it disappears from every other dropdown until it's unassigned. Rows added before any DD part is picked show a disabled <em>— Pick a Device Design part —</em> placeholder.</p>
+        <div class="of-group" style="max-width: 480px;">
+          <div class="of-group-body">
+            <div class="of-prow-heads"><span>Product</span><span>QTY</span><span>Shipment</span><span></span></div>
+            <div class="of-prow"><select><option>7702-6001N — Splint, traditional family (1)</option><option>7702-6001N — Splint, traditional family (2)</option></select><input type="number" value="1" min="1" /><select><option>Shipment 1</option></select><span></span></div>
+            <div class="of-prow"><select><option disabled selected>— Pick a Device Design part —</option><option>7702-6001N — Splint, traditional family (2)</option></select><input type="number" value="1" min="1" /><select><option>Shipment 1</option></select><span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Per-shipment Edit removed (V6, admin)</span></div>
+        <p class="sg-desc">V6 (Phase 26): the admin O&amp;F drawer no longer has an <em>Edit shipping</em> button on each shipment card. All editing flows through the global Edit button at the top of the drawer. <b>Portal keeps the per-shipment Edit</b> because customer-side reps have no global Edit alternative.</p>
+        <div class="of-ship-card" style="max-width: 480px;">
+          <div class="of-ship-card-head">
+            <div class="of-ship-card-title">Shipment 1</div>
+          </div>
+          <div class="of-ship-card-body">
+            <dl class="of-ship-info">
+              <div class="of-ship-info-row"><dt>Carrier</dt><dd>FedEx</dd></div>
+              <div class="of-ship-info-row"><dt>Speed</dt><dd>Priority Overnight</dd></div>
+              <div class="of-ship-info-row"><dt>Ship to</dt><dd>Dr. Lopez (Surgeon)</dd></div>
+              <div class="of-ship-info-row"><dt>Estimated Ship Date</dt><dd>25JUN2026</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+      <div class="sg-tile">
+        <div class="sg-tile-meta"><span class="sg-tile-label">Ship-to default / alternate toggle</span></div>
+        <p class="sg-desc">Per-shipment Ship-to mode toggle. <strong>Default</strong> = dropdown of pre-saved addresses (rep + surgeon profiles). <strong>Alternate</strong> = pair of free-text inputs for a custom address. Selecting a default option auto-resolves the address line below.</p>
+        <div class="of-shipment" style="max-width: 480px;">
+          <div class="of-shipment-body">
+            <div class="form-row">
+              <label>Ship to</label>
+              <div class="of-shipto-toggle" role="tablist" aria-label="Ship-to mode">
+                <button class="ct-btn is-active" type="button" role="tab">Default</button>
+                <button class="ct-btn" type="button" role="tab">Alternate</button>
+              </div>
+              <div class="of-shipto-pane">
+                <select><option>Dr. Lopez (Surgeon)</option><option>Sarah Chen (Sales rep)</option></select>
+                <div class="of-shipto-default-meta">567 Oak St, Houston, TX 77019</div>
+              </div>
+            </div>
+            <div class="form-row" style="margin-top: 12px;">
+              <label>Estimated Ship Date</label>
+              <input type="date" value="2026-06-25" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>
